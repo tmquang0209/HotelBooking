@@ -1,36 +1,12 @@
 ﻿import React, { useState, useEffect } from "react";
-import {
-    View,
-    Text,
-    Image,
-    FlatList,
-    Dimensions,
-    TouchableOpacity,
-} from "react-native";
+import { View, Text, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "../styles";
+import RoomListItem from "./RoomListItem";
 
 import { API_KEY, API_HOST } from "@env";
-
-const screenWidth = Dimensions.get("window").width;
-
-const EllipsisText = ({ text, maxWords }) => {
-    const words = text.split(" ");
-
-    const displayText = words.slice(0, maxWords).join(" ");
-    const isOverflowing = words.length > maxWords;
-
-    return (
-        <View style={{ maxWidth: screenWidth }}>
-            <Text>
-                {displayText}
-                {isOverflowing ? "..." : ""}
-            </Text>
-        </View>
-    );
-};
 
 const searchRooms = async (
     location,
@@ -70,13 +46,56 @@ const searchRooms = async (
     }
 };
 
-const handleRoomPress = (searchID, data, item, navigation) => {
+const getRecentViews = async () => {
+    try {
+        const recentViewsJson = await AsyncStorage.getItem("recentViews");
+        if (recentViewsJson !== null) {
+            return JSON.parse(recentViewsJson);
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách lịch sử xem gần đây: ", error);
+        return [];
+    }
+};
+
+const addToRecentViews = async (hotel) => {
+    try {
+        const recentViews = await getRecentViews();
+
+        const index = recentViews.findIndex(
+            (item) => item.item.hotel_id === hotel.item.hotel_id
+        );
+
+        if (index === -1) {
+            recentViews.unshift(hotel);
+
+            const maxLength = 10;
+            if (recentViews.length > maxLength) {
+                recentViews.pop();
+            }
+
+            await AsyncStorage.setItem(
+                "recentViews",
+                JSON.stringify(recentViews)
+            );
+        }
+    } catch (error) {
+        console.error("Lỗi khi thêm vào lịch sử xem gần đây: ", error);
+    }
+};
+
+const handleRoomPress = async (searchID, data, item, navigation) => {
+    const hotel = { searchID, data, item };
+    addToRecentViews(hotel);
     // Navigate to the desired screen using the 'navigation' object
     navigation.navigate("Details", {
         searchID,
         data,
         item,
     });
+    // navigation.navigate("Dashboard");
     console.log(`Selected hotel ID: ${item.hotel_id}`);
 };
 
@@ -123,63 +142,13 @@ export default function ListRooms({ route }) {
                 <FlatList
                     data={listRooms}
                     renderItem={({ item }) => (
-                        <TouchableOpacity
-                            onPress={() =>
-                                handleRoomPress(
-                                    searchID,
-                                    {
-                                        startDate: route.params.startDate,
-                                        endDate: route.params.endDate,
-                                        numOfRoom: route.params.numOfRoom,
-                                        numOfPeople: route.params.numOfPeople,
-                                    },
-                                    item,
-                                    navigation
-                                )
-                            }
-                        >
-                            <View style={styles.roomContainer}>
-                                <Image
-                                    style={styles.roomImage}
-                                    source={{
-                                        uri: item.main_photo_url,
-                                    }}
-                                />
-
-                                <View style={styles.roomDetails}>
-                                    <EllipsisText
-                                        text={item.hotel_name}
-                                        maxWords={4}
-                                    />
-                                    <View style={styles.starContainer}>
-                                        {Array.from({ length: item.class }).map(
-                                            (_, index) => (
-                                                <Ionicons
-                                                    key={index}
-                                                    name="star"
-                                                    color="#FFDF00"
-                                                    size={20}
-                                                />
-                                            )
-                                        )}
-                                    </View>
-                                    <EllipsisText
-                                        text={
-                                            item.district +
-                                            (item.district ? ", " : "") +
-                                            item.city
-                                        }
-                                        maxWords={4}
-                                    />
-                                    <Text style={styles.priceText}>
-                                        {item.min_total_price.toLocaleString(
-                                            "en-US"
-                                        )}{" "}
-                                        {item.currency_code}
-                                    </Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
+                        <RoomListItem
+                            item={item}
+                            handleRoomPress={handleRoomPress}
+                            searchID={searchID}
+                            navigation={navigation}
+                            route={route}
+                        />
                     )}
                 />
             )}

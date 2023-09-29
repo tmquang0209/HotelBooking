@@ -141,6 +141,7 @@ export default function Details({ route }) {
             <ScrollView>
                 <View>
                     {photo ? (
+                        // <Text></Text>
                         <SliderBox
                             images={photo[0]}
                             sliderBoxHeight={200}

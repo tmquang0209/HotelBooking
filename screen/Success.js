@@ -1,4 +1,4 @@
-﻿import React from "react";
+﻿import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../styles";
@@ -6,9 +6,11 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function Success({ route }) {
     const navigation = useNavigation();
+    useEffect(() => {
         navigation.setOptions({
             title: "",
         });
+    }, []);
     return (
         <View style={[styles.container, { alignItems: "center" }]}>
             <Ionicons

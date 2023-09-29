@@ -3,10 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import DeviceInfo, {
-    getUniqueId,
-    getManufacturer,
-} from "react-native-device-info";
+import { StatusBar } from "react-native";
 
 import Home from "./screen/Home";
 import Search from "./screen/Search";
@@ -17,6 +14,11 @@ import Success from "./screen/Success";
 import SearchOrder from "./screen/SearchOrder";
 import OrderDetails from "./screen/OrderDetails";
 import Notification from "./screen/Notification";
+import Login from "./screen/Login";
+import Signup from "./screen/Signup";
+import User from "./screen/User";
+import ManageAccount from "./screen/ManageAccount";
+import ForgotPassword from "./screen/ForgotPassword";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -46,6 +48,7 @@ function Tab() {
                 },
                 tabBarActiveTintColor: "#2196F3",
                 tabBarInactiveTintColor: "gray",
+                headerShown: false,
             })}
         >
             <BottomTab.Screen
@@ -63,31 +66,37 @@ function Tab() {
             <BottomTab.Screen
                 name="User"
                 options={{ title: "User" }}
-                component={Home}
+                component={User}
             />
         </BottomTab.Navigator>
     );
 }
 
 export default function App() {
-    let deviceId = DeviceInfo.getDeviceId();
-    console.log(deviceId);
     return (
         <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator options={{ headerShown: false }}>
                 <Stack.Screen
                     name="TabScreen"
                     component={Tab}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen name="Search" component={Search} />
-                <Stack.Screen name="ListRooms" component={ListRooms} />
+                {/* <Stack.Screen name="ListRooms" component={ListRooms} />
                 <Stack.Screen name="Details" component={Details} />
                 <Stack.Screen name="Book" component={Book} />
                 <Stack.Screen name="Success" component={Success} />
                 <Stack.Screen name="OrderDetails" component={OrderDetails} />
                 <Stack.Screen name="Notification" component={Notification} />
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="Signup" component={Signup} />
+                <Stack.Screen
+                    name="ForgotPassword"
+                    component={ForgotPassword}
+                />
+                <Stack.Screen name="ManageAccount" component={ManageAccount} /> */}
             </Stack.Navigator>
+            <StatusBar auto />
         </NavigationContainer>
     );
 }

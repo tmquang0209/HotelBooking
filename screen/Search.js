@@ -8,8 +8,9 @@ import {
     Keyboard,
     Alert,
 } from "react-native";
-import DatePicker from "../components/DatePicker";
+import DatePicker from "react-native-date-ranges";
 import Autocomplete from "react-native-autocomplete-input";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
 import styles from "../styles";
 import { API_KEY, API_HOST } from "@env";
@@ -39,31 +40,21 @@ const fetchAutoComplete = async (text) => {
     }
 };
 
-// `${currentDate.getFullYear()}-${
-//     currentDate.getMonth() + 1
-// }-${currentDate.getDate()}`;
 export default function Search({ navigation }) {
     const currentDate = new Date();
-    const [startDate, setStartDate] = useState(currentDate);
-
-    const minEndDate = new Date(startDate);
-    minEndDate.setDate(minEndDate.getDate() + 1);
-
-    const [endDate, setEndDate] = useState(minEndDate);
-    const [formatStartDate, setFormatStartDate] = useState(
-        `${startDate.getFullYear()}-${
-            startDate.getMonth() + 1
-        }-${startDate.getDate()}`
+    const [startDate, setStartDate] = useState(
+        format(currentDate, "yyyy-MM-dd")
     );
 
-    // console.log("Start date: ", startDate);
-    // console.log("Format start date: ", formatStartDate);
-
-    const [formatEndDate, setFormatEndDate] = useState(
-        `${endDate.getFullYear()}-${
-            endDate.getMonth() + 1
-        }-${endDate.getDate()}`
+    const [endDate, setEndDate] = useState(
+        format(currentDate, "yyyy-MM-dd")
     );
+
+    console.log(startDate, endDate);
+    const [formatStartDate, setFormatStartDate] = useState(startDate);
+    const [formatEndDate, setFormatEndDate] = useState(endDate);
+    console.log(formatStartDate, formatEndDate);
+
     const [numOfRoom, setNumOfRoom] = useState(1);
     const [numOfPeople, setNumOfPeople] = useState(1);
     const [location, setLocation] = useState(null);
@@ -71,6 +62,40 @@ export default function Search({ navigation }) {
     const [hideResults, setHideResults] = useState(false);
     const timerRef = useRef(null);
     // console.log(numOfRoom, numOfPeople, location);
+
+    const handleDateChange = (startDate, endDate) => {
+        const currentDate = new Date(); // Get the current date with current time
+        currentDate.setHours(0, 0, 0, 0); // Set the time to midnight
+
+        // Parse startDate into a Date object with the same format as currentDate
+        const startDateParts = startDate.split("/");
+        const parsedStartDate = new Date(
+            parseInt(startDateParts[0]),
+            parseInt(startDateParts[1]) - 1, // Subtract 1 from the month because months are 0-based
+            parseInt(startDateParts[2])
+        );
+        parsedStartDate.setHours(0, 0, 0, 0); // Set the time to midnight for parsedStartDate
+
+        console.log(parsedStartDate < currentDate);
+
+        if (parsedStartDate < currentDate) {
+            Alert.alert(
+                "Error",
+                "Start date must be greater than or equal to the current date."
+            );
+        } else if (endDate < parsedStartDate) {
+            Alert.alert(
+                "Error",
+                "End date must be greater than or equal to the start date."
+            );
+        } else {
+            setStartDate(startDate);
+            setEndDate(endDate);
+
+            setFormatStartDate(startDate.replaceAll("/", "-"));
+            setFormatEndDate(endDate.replaceAll("/", "-"));
+        }
+    };
 
     const handleLocationChange = (text) => {
         clearTimeout(timerRef.current); // Clear the previous timer
@@ -93,32 +118,42 @@ export default function Search({ navigation }) {
         >
             <View style={styles.container}>
                 <View style={styles.inputForm}>
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.dateInputLabel}>Check-in Date</Text>
-                        <DatePicker
-                            defaultDate={startDate}
-                            onDateChange={(value) => {
-                                setStartDate(value);
-                                const newMinEndDate = new Date(value);
-                                newMinEndDate.setDate(
-                                    newMinEndDate.getDate() + 1
-                                );
-                                setEndDate(newMinEndDate);
-                                setFormatStartDate(
-                                    format(new Date(startDate), "yyyy-MM-dd")
-                                );
-                            }}
-                            minimumDate={currentDate}
-                        />
-                    </View>
-                    <View style={styles.inputContainer}>
+                    <View style={{ height: 60 }}>
                         <Text style={styles.dateInputLabel}>
-                            Check-out Date
+                            Check-in - Check-out
                         </Text>
                         <DatePicker
-                            defaultDate={endDate}
-                            onDateChange={(value) => setEndDate(value)}
-                            minimumDate={minEndDate}
+                            style={styles.input}
+                            customStyles={{
+                                placeholderText: {
+                                    fontSize: 20,
+                                    color: "black",
+                                }, // placeHolder style
+                                headerStyle: {}, // title container style
+                                headerMarkTitle: {}, // title mark style
+                                headerDateTitle: {}, // title Date style
+                                contentInput: {}, //content text container style
+                                contentText: {}, //after selected text Style
+                            }} // optional
+                            // centerAlign // optional text will align center or not
+                            minDateRange={currentDate} // Add minDate prop here
+                            allowFontScaling={false} // optional
+                            placeholder={`${startDate} → ${endDate}`}
+                            // placeholder={`${format(
+                            //     startDate,
+                            //     "dd-MM-yyyy"
+                            // )} → ${format(endDate, "dd-MM-yyyy")}`}
+                            mode={"range"}
+                            markText={" "}
+                            blockBefore={true}
+                            inFormat="YYYY-MM-DD"
+                            outFormat="YYYY-MM-DD"
+                            onConfirm={(value) => {
+                                handleDateChange(
+                                    value.startDate,
+                                    value.endDate
+                                );
+                            }}
                         />
                     </View>
                     <View style={styles.inputContainer}>

@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     Keyboard,
     Alert,
+    SafeAreaView,
 } from "react-native";
 import styles from "../styles";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -26,7 +27,8 @@ const fetchOrderID = async (orderID, navigation) => {
         console.log(result);
         if (result) {
             //navigate to details
-            navigation.navigate("OrderDetails");
+            // console.log(result);
+            navigation.navigate("OrderDetails", result);
         } else {
             Alert.alert("Error", "OrderID not found");
         }
@@ -44,7 +46,7 @@ export default function SearchOrder({ navigation }) {
                 Keyboard.dismiss();
             }}
         >
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <View style={{ height: 80 }}>
                     <Text style={{ marginBottom: 10 }}>OrderID:</Text>
                     <TextInput
@@ -64,7 +66,7 @@ export default function SearchOrder({ navigation }) {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         </TouchableWithoutFeedback>
     );
 }

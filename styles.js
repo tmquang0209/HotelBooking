@@ -14,8 +14,9 @@ export default StyleSheet.create({
     },
 
     inputContainer: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: "col",
+        // alignItems: "center",
+        height: 60,
         marginBottom: 20,
     },
 
@@ -189,4 +190,74 @@ export default StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
+
+    loginScreenContainer: {
+        flex: 1,
+        backgroundColor: "#FFFFFF",
+    },
+
+    logoText: {
+        fontSize: 40,
+        fontWeight: "800",
+        marginTop: 20,
+        marginBottom: 30,
+        textAlign: "center",
+    },
+
+    loginFormView: {
+        flex: 1,
+        margin: 10,
+    },
+
+    loginFormTextInput: {
+        height: 43,
+        fontSize: 14,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "#eaeaea",
+        backgroundColor: "#fafafa",
+        paddingLeft: 10,
+        marginTop: 5,
+        marginBottom: 5,
+    },
+
+    loginButton: {
+        backgroundColor: "#3897f1",
+        borderRadius: 5,
+        height: 45,
+        marginTop: 10,
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    loginText: {
+        color: "white",
+        fontSize: 15,
+    },
+
+    forgotBtn: { alignItems: "flex-end", margin: 10 },
+
+    forgotTxt: {
+        fontSize: 15,
+        color: "#3897f1",
+    },
+
+    signupButton: {
+        alignItems: "center",
+        marginTop: 20,
+    },
+
+    signupText: {
+        fontSize: 15,
+        color: "#3897f1",
+    },
+
+    menuUser: {
+        padding: 10,
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
+    userTxt: { fontSize: 15, paddingLeft: 10 },
 });

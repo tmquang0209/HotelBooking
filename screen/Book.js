@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import {
     Alert,
     View,
@@ -22,19 +22,8 @@ const handleBooking = async (
     city,
     mobilePhone,
     hotelDetail,
-    totalPrice,
-    navigation
+    totalPrice
 ) => {
-    console.log(
-        firstName,
-        lastName,
-        email,
-        address,
-        city,
-        mobilePhone,
-        hotelDetail,
-        totalPrice
-    );
     const options = {
         method: "GET",
         url: "https://api.toluu.site/post/booking.php",
@@ -52,8 +41,6 @@ const handleBooking = async (
 
     try {
         const response = await axios.request(options);
-        console.log(response.data);
-        navigation.navigate("Success",{OrderID: response.data.OrderID});
         return response.data; // Return the autocomplete suggestions
     } catch (error) {
         console.error(error);
@@ -63,10 +50,11 @@ const handleBooking = async (
 
 export default function Book({ route }) {
     const navigation = useNavigation();
-
-    navigation.setOptions({
-        title: "Booking Info",
-    });
+    useEffect(() => {
+        navigation.setOptions({
+            title: "Booking Info",
+        });
+    }, []);
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -87,7 +75,40 @@ export default function Book({ route }) {
         hotelDetail.numOfRoom * hotelDetail.price * totalDays
     );
     // setHotelDetail(route.params.data);
+    const handleBookingConfirmation = async () => {
+        console.log(
+            firstName,
+            lastName,
+            email,
+            address,
+            city,
+            mobilePhone,
+            hotelDetail,
+            totalPrice
+        );
 
+        try {
+            const response = await handleBooking(
+                firstName,
+                lastName,
+                email,
+                address,
+                city,
+                mobilePhone,
+                hotelDetail,
+                totalPrice,
+                navigation
+            );
+
+            // If booking is successful, navigate to the "Success" page
+            if (response && response.OrderID) {
+                navigation.navigate("Success", { OrderID: response.OrderID });
+            }
+        } catch (error) {
+            console.error(error);
+            // Handle the error if needed
+        }
+    };
     return (
         <TouchableWithoutFeedback
             onPress={() => {
@@ -234,17 +255,7 @@ export default function Book({ route }) {
                                     {
                                         text: "Yes",
                                         onPress: () =>
-                                            handleBooking(
-                                                firstName,
-                                                lastName,
-                                                email,
-                                                address,
-                                                city,
-                                                mobilePhone,
-                                                hotelDetail,
-                                                totalPrice,
-                                                navigation
-                                            ),
+                                            handleBookingConfirmation(),
                                     },
                                 ]
                             )
