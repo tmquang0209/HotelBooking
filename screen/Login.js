@@ -11,7 +11,7 @@ import {
 import styles from "../styles";
 import axios from "axios";
 import bcrypt from "react-native-bcrypt";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const handlePressLogin = async (username, password, navigation) => {
@@ -37,17 +37,13 @@ const handlePressLogin = async (username, password, navigation) => {
             return;
         }
 
-        const checkPassword = bcrypt.compareSync(
-            password,
-            responseJson.password
-        );
-
+        const checkPassword = bcrypt.compareSync(password, responseJson.password);
+        console.log(checkPassword);
         if (checkPassword) {
             await AsyncStorage.setItem("Account", JSON.stringify(responseJson));
-            navigation.navigate("Dashboard");
-            Alert.alert("Success", "Login success");
-
             await AsyncStorage.setItem("isLoggedIn", "true");
+            navigation.navigate("Dashboard");
+            // Alert.alert("Success", "Login success");
         } else {
             Alert.alert("Error", "Password is incorrect.");
         }

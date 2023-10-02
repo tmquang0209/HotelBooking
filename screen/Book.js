@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import styles from "../styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const handleBooking = async (
     firstName,
@@ -50,19 +51,44 @@ const handleBooking = async (
 
 export default function Book({ route }) {
     const navigation = useNavigation();
-    useEffect(() => {
-        navigation.setOptions({
-            title: "Booking Info",
-        });
-    }, []);
-
+    const [account, setAccount] = useState();
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState();
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [mobilePhone, setMobilePhone] = useState("");
     const [hotelDetail, setHotelDetail] = useState(route.params.data);
+
+    const getAccountInfo = async () => {
+        const accountInfo = await AsyncStorage.getItem("Account");
+        if (accountInfo) {
+            const accountJson = JSON.parse(accountInfo);
+            setAccount(accountJson);
+
+            const fullName = account.full_name;
+            const nameArray = fullName.split(" ");
+            if (nameArray.length > 1) {
+                const getLastName = nameArray[nameArray.length - 1];
+                nameArray.pop();
+                const getFirstName = nameArray.join(" ");
+                setFirstName(getFirstName);
+                setLastName(getLastName);
+            }
+            setEmail(account.email);
+            setAddress(account.address);
+            setCity(account.city);
+            setMobilePhone(account.mobile_phone);
+        }
+    };
+
+    useEffect(() => {
+        navigation.setOptions({
+            title: "Booking Info",
+        });
+        getAccountInfo();
+    }, []);
+    // console.log("account", account.email);
 
     const checkInDate = new Date(hotelDetail.checkIn);
     const checkOutDate = new Date(hotelDetail.checkOut);
@@ -74,6 +100,8 @@ export default function Book({ route }) {
     const [totalPrice, setTotalPrice] = useState(
         hotelDetail.numOfRoom * hotelDetail.price * totalDays
     );
+
+    const [currencyCode, setCurrencyCode] = useState(hotelDetail.currency_code);
     // setHotelDetail(route.params.data);
     const handleBookingConfirmation = async () => {
         console.log(
@@ -96,8 +124,7 @@ export default function Book({ route }) {
                 city,
                 mobilePhone,
                 hotelDetail,
-                totalPrice,
-                navigation
+                totalPrice
             );
 
             // If booking is successful, navigate to the "Success" page
@@ -123,6 +150,7 @@ export default function Book({ route }) {
                         <Text>First name: </Text>
                         <TextInput
                             style={styles.input}
+                            value={firstName}
                             onChangeText={(text) => setFirstName(text)}
                         />
                     </View>
@@ -132,6 +160,7 @@ export default function Book({ route }) {
                         <Text>Last name: </Text>
                         <TextInput
                             style={styles.input}
+                            value={lastName}
                             onChangeText={(text) => setLastName(text)}
                         />
                     </View>
@@ -141,6 +170,7 @@ export default function Book({ route }) {
                         <Text>Email Address: </Text>
                         <TextInput
                             style={styles.input}
+                            value={email}
                             onChangeText={(text) => setEmail(text)}
                         />
                     </View>
@@ -150,6 +180,7 @@ export default function Book({ route }) {
                         <Text>Address: </Text>
                         <TextInput
                             style={styles.input}
+                            value={address}
                             onChangeText={(text) => setAddress(text)}
                         />
                     </View>
@@ -159,6 +190,7 @@ export default function Book({ route }) {
                         <Text>City: </Text>
                         <TextInput
                             style={styles.input}
+                            value={city}
                             onChangeText={(text) => setCity(text)}
                         />
                     </View>
@@ -168,6 +200,7 @@ export default function Book({ route }) {
                         <Text>Mobile Number: </Text>
                         <TextInput
                             style={styles.input}
+                            value={mobilePhone}
                             keyboardType="numeric"
                             onChangeText={(text) => setMobilePhone(text)}
                         />

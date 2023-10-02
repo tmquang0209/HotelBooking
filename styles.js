@@ -260,4 +260,8 @@ export default StyleSheet.create({
     },
 
     userTxt: { fontSize: 15, paddingLeft: 10 },
+    detailInfo: {
+        paddingBottom: 5,
+        fontSize: 15,
+    },
 });

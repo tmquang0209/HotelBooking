@@ -28,7 +28,13 @@ const handlePressSignup = async (
     navigation
 ) => {
     const saltRounds = 12;
-
+    // Use a cryptographically secure random number generator
+    bcrypt.setRandomFallback((len) => {
+        const buf = new Uint8Array(len);
+        // Use a secure random generator from the crypto module in Node.js
+        return buf.map(() => Math.floor(isaac.random() * 256));
+    });
+    
     bcrypt.hash(password, saltRounds, async (err, hash) => {
         if (err) {
             console.error(err);
@@ -72,13 +78,6 @@ export default function Signup() {
     const [rePassword, setRePassword] = useState();
     const [address, setAddress] = useState();
     const [city, setCity] = useState();
-
-    // Use a cryptographically secure random number generator
-    bcrypt.setRandomFallback((len) => {
-        const buf = new Uint8Array(len);
-        // Use a secure random generator from the crypto module in Node.js
-        return buf.map(() => Math.floor(isaac.random() * 256));
-    });
 
     const onSignupPress = () => {
         if (

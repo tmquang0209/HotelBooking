@@ -43,6 +43,10 @@ export default function User({ navigation }) {
         navigation.navigate("ManageAccount");
     };
 
+    const handlePressBookings = () => {
+        navigation.navigate("ListOrders", { account });
+    };
+
     const handlePressLogout = async () => {
         Alert.alert(
             "Are you sure you want to log out?",
@@ -141,6 +145,13 @@ export default function User({ navigation }) {
                             <Text style={styles.userTxt}>
                                 Manage your account
                             </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.menuUser}
+                            onPress={() => handlePressBookings()}
+                        >
+                            <Ionicons name="briefcase-outline" size={20} />
+                            <Text style={styles.userTxt}>Bookings</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.menuUser}

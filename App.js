@@ -19,6 +19,7 @@ import Signup from "./screen/Signup";
 import User from "./screen/User";
 import ManageAccount from "./screen/ManageAccount";
 import ForgotPassword from "./screen/ForgotPassword";
+import ListOrders from "./screen/ListOrder";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -82,10 +83,11 @@ export default function App() {
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen name="Search" component={Search} />
-                {/* <Stack.Screen name="ListRooms" component={ListRooms} />
+                <Stack.Screen name="ListRooms" component={ListRooms} />
                 <Stack.Screen name="Details" component={Details} />
                 <Stack.Screen name="Book" component={Book} />
                 <Stack.Screen name="Success" component={Success} />
+                <Stack.Screen name="ListOrders" component={ListOrders} />
                 <Stack.Screen name="OrderDetails" component={OrderDetails} />
                 <Stack.Screen name="Notification" component={Notification} />
                 <Stack.Screen name="Login" component={Login} />
@@ -94,7 +96,7 @@ export default function App() {
                     name="ForgotPassword"
                     component={ForgotPassword}
                 />
-                <Stack.Screen name="ManageAccount" component={ManageAccount} /> */}
+                <Stack.Screen name="ManageAccount" component={ManageAccount} />
             </Stack.Navigator>
             <StatusBar auto />
         </NavigationContainer>
