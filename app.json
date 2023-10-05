@@ -2,7 +2,7 @@
   "expo": {
     "name": "Booking",
     "slug": "Booking",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -32,6 +32,12 @@
       "eas": {
         "projectId": "2ac7af46-b92e-4ada-8cf3-6801c05fb007"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2ac7af46-b92e-4ada-8cf3-6801c05fb007"
     }
   }
 }

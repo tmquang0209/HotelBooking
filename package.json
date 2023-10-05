@@ -17,6 +17,7 @@
     "date-fns": "^2.30.0",
     "deprecated-react-native-prop-types": "^4.2.1",
     "expo": "^49.0.0",
+    "expo-dev-client": "~2.4.11",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
@@ -33,10 +34,11 @@
     "react-native-ionicons": "^4.6.5",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
-    "expo-dev-client": "~2.4.11"
+    "expo-updates": "~0.18.15"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "sharp-cli": "^2.1.0"
   },
   "private": true
 }

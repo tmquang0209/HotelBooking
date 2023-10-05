@@ -132,26 +132,32 @@ export default StyleSheet.create({
     },
 
     horLine: {
-        width: "100%", // Độ dài của dòng kẻ
-        height: 2, // Độ dày của dòng kẻ
-        backgroundColor: "gray", // Màu sắc của dòng kẻ
+        width: "100%",
+        height: 2,
+        backgroundColor: "gray",
     },
 
     dateContainer: {
-        flexDirection: "row", // Xác định dạng là hàng ngang
+        flexDirection: "column",
         margin: 10,
-        justifyContent: "space-around", // Canh giữa các cột và để khoảng trắng xung quanh chúng
+        justifyContent: "space-around",
+    },
+
+    detailContainer: {
+        flexDirection: "row",
+        margin: 10,
+        justifyContent: "space-around",
     },
 
     separator: {
-        width: 1, // Độ dài của dòng kẻ
-        height: "100%", // Chiều cao của dòng kẻ
-        backgroundColor: "gray", // Màu sắc của dòng kẻ
+        width: 1,
+        height: "100%",
+        backgroundColor: "gray",
         marginRight: 10,
     },
 
     column: {
-        flex: 1, // Độ rộng cột bằng nhau
+        flex: 1,
     },
 
     roomContainer: {

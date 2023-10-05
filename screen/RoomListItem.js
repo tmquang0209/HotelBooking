@@ -20,6 +20,7 @@ export default function RoomListItem(props) {
         );
     };
     const screenWidth = Dimensions.get("window").width;
+    console.log("search", searchID);
     return (
         <TouchableOpacity
             onPress={() =>

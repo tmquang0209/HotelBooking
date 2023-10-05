@@ -4,6 +4,7 @@ import styles from "../styles";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { API_KEY, API_HOST } from "@env";
+import format from "date-fns/format";
 
 const getDetail = async (
     hotelID,
@@ -42,14 +43,18 @@ const getDetail = async (
 
 const ItemView = (props) => {
     const { booking, navigation } = props;
+    const today = new Date();
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    const nextTwoDay = new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+
     const [detail, setDetail] = useState(null);
     useEffect(() => {
         const fetchData = async () => {
             const detailData = await getDetail(
                 booking.hotel_id,
                 booking.search_id,
-                booking.check_out,
-                booking.check_in,
+                format(nextTwoDay, "yyyy-MM-dd"),
+                format(tomorrow, "yyyy-MM-dd"),
                 booking.qty_people,
                 booking.qty_room
             );
@@ -71,22 +76,22 @@ const ItemView = (props) => {
         <TouchableOpacity onPress={() => handlePress()}>
             <View style={styles.roomContainer}>
                 {/* <Image
-                    style={styles.roomImage}
-                    source={{
-                        uri: item.main_photo_url,
-                    }}
-                /> */}
+                        style={styles.roomImage}
+                        source={{
+                            uri: item.main_photo_url,
+                        }}
+                    /> */}
 
                 <View style={styles.roomDetails}>
                     <Text>
-                        #{booking.id} {detail[0].hotel_name}
+                        #{booking.id} {detail[0]?.hotel_name}
                     </Text>
                     <Text>
-                        {detail[0].address}, {detail[0].city}
+                        {detail[0]?.address}, {detail[0]?.city}
                     </Text>
                     <Text style={styles.priceText}>
                         {booking?.total_price?.toLocaleString("en-us")}{" "}
-                        {booking.currency_code}
+                        {booking?.currency_code}
                     </Text>
                 </View>
             </View>
@@ -96,7 +101,7 @@ const ItemView = (props) => {
 
 export default function ListOrders({ route }) {
     const navigation = useNavigation();
-    const [account, setAccount] = useState(route.params.account);
+    const account = route.params.account;
     const [bookings, setBookings] = useState();
 
     const fetchBookingsData = async () => {
@@ -121,7 +126,7 @@ export default function ListOrders({ route }) {
         });
         fetchBookingsData();
     }, []);
-    console.log("Bookings ", bookings);
+    // console.log("Bookings ", bookings);
     return (
         <View style={styles.container}>
             <FlatList
@@ -129,7 +134,7 @@ export default function ListOrders({ route }) {
                 renderItem={({ item }) => (
                     <ItemView booking={item} navigation={navigation} />
                 )}
-                // key={}
+                key={({ item }) => item.id}
             />
         </View>
     );

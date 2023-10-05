@@ -63,7 +63,11 @@ function Tab() {
                 options={{ title: "Search" }}
                 component={SearchOrder}
             />
-            <BottomTab.Screen name="Notification" component={Home} />
+            <BottomTab.Screen
+                name="Notification"
+                component={Notification}
+                // options={{ tabBarBadge: "" }}
+            />
             <BottomTab.Screen
                 name="User"
                 options={{ title: "User" }}

@@ -66,7 +66,7 @@ export default function User({ navigation }) {
             ]
         );
     };
-    console.log("account", account);
+    // console.log("account", account);
 
     return (
         <View style={{ flex: 1 }}>

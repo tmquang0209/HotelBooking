@@ -15,7 +15,7 @@ const searchRooms = async (
     numOfRoom,
     numOfPeople
 ) => {
-    console.log(API_KEY, API_HOST);
+    // console.log(API_KEY, API_HOST);
     const options = {
         method: "GET",
         url: "https://apidojo-booking-v1.p.rapidapi.com/properties/list",
@@ -131,7 +131,7 @@ export default function ListRooms({ route }) {
         }
     }, []);
 
-    console.log(listRooms);
+    // console.log(listRooms);
     return (
         <View style={styles.container}>
             {listRooms?.zero_results_message ? (

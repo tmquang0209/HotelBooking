@@ -145,6 +145,7 @@ export default function Search({ navigation }) {
                             // )} → ${format(endDate, "dd-MM-yyyy")}`}
                             mode={"range"}
                             markText={" "}
+                            ButtonText={"Confirm"}
                             blockBefore={true}
                             inFormat="YYYY-MM-DD"
                             outFormat="YYYY-MM-DD"

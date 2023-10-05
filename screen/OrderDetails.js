@@ -54,7 +54,7 @@ export default function OrderDetails({ route }) {
                 {detail[0].address}, {detail[0].city}
             </Text>
             <View style={styles.horLine}></View>
-            <View style={styles.dateContainer}>
+            <View style={styles.detailContainer}>
                 <View style={styles.column}>
                     <Text>Check-in</Text>
                     <Text style={{ fontWeight: "bold" }}>
@@ -70,7 +70,7 @@ export default function OrderDetails({ route }) {
                 </View>
             </View>
             <View style={styles.horLine}></View>
-            <View style={styles.dateContainer}>
+            <View style={styles.detailContainer}>
                 <View style={styles.column}>
                     <Text>Guest</Text>
                     <Text style={{ fontWeight: "bold" }}>
@@ -79,7 +79,7 @@ export default function OrderDetails({ route }) {
                 </View>
             </View>
             <View style={styles.horLine}></View>
-            <View style={styles.dateContainer}>
+            <View style={styles.detailContainer}>
                 <View style={styles.column}>
                     <Text>Quantity of Rooms</Text>
                     <Text style={{ fontWeight: "bold" }}>Price</Text>

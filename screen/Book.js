@@ -14,6 +14,7 @@ import axios from "axios";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import styles from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import DatePicker from "react-native-date-ranges";
 
 const handleBooking = async (
     firstName,
@@ -51,35 +52,63 @@ const handleBooking = async (
 
 export default function Book({ route }) {
     const navigation = useNavigation();
+
     const [account, setAccount] = useState();
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState();
-    const [address, setAddress] = useState("");
-    const [city, setCity] = useState("");
-    const [mobilePhone, setMobilePhone] = useState("");
     const [hotelDetail, setHotelDetail] = useState(route.params.data);
 
-    const getAccountInfo = async () => {
-        const accountInfo = await AsyncStorage.getItem("Account");
-        if (accountInfo) {
-            const accountJson = JSON.parse(accountInfo);
-            setAccount(accountJson);
+    const [total, setTotal] = useState({
+        price: 0,
+        days: 0,
+    });
 
-            const fullName = account.full_name;
-            const nameArray = fullName.split(" ");
-            if (nameArray.length > 1) {
-                const getLastName = nameArray[nameArray.length - 1];
-                nameArray.pop();
-                const getFirstName = nameArray.join(" ");
-                setFirstName(getFirstName);
-                setLastName(getLastName);
+    const getAccountInfo = async () => {
+        try {
+            const accountInfo = await AsyncStorage.getItem("Account");
+            if (accountInfo) {
+                const accountJson = JSON.parse(accountInfo);
+                setAccount(accountJson);
+
+                const fullName = accountJson.full_name;
+                if (fullName) {
+                    const nameArray = fullName.split(" ");
+                    if (nameArray.length > 1) {
+                        const getLastName = nameArray[nameArray.length - 1];
+                        nameArray.pop();
+                        const getFirstName = nameArray.join(" ");
+                        setFirstName(getFirstName);
+                        setLastName(getLastName);
+                    }
+                }
             }
-            setEmail(account.email);
-            setAddress(account.address);
-            setCity(account.city);
-            setMobilePhone(account.mobile_phone);
+        } catch (error) {
+            console.error(error);
+            // Handle the error if needed
         }
+    };
+
+    const onDateChange = (value) => {
+        const startDate = value.startDate.replaceAll("/", "-");
+        const endDate = value.endDate.replaceAll("/", "-");
+
+        setHotelDetail({
+            ...hotelDetail,
+            checkIn: startDate,
+            checkOut: endDate,
+        });
+
+        // Calculate the difference in days
+        const checkInDate = new Date(startDate);
+        const checkOutDate = new Date(endDate);
+        const timeDifference = checkOutDate - checkInDate;
+        const days = timeDifference / (1000 * 60 * 60 * 24);
+
+        // Calculate the new price
+        const price = hotelDetail.numOfRoom * hotelDetail.price * days;
+
+        // Update the total state with the new values
+        setTotal({ days, price });
     };
 
     useEffect(() => {
@@ -87,44 +116,35 @@ export default function Book({ route }) {
             title: "Booking Info",
         });
         getAccountInfo();
+        calcTotalDay();
     }, []);
-    // console.log("account", account.email);
 
-    const checkInDate = new Date(hotelDetail.checkIn);
-    const checkOutDate = new Date(hotelDetail.checkOut);
+    const calcTotalDay = () => {
+        const checkInDate = new Date(hotelDetail.checkIn);
+        const checkOutDate = new Date(hotelDetail.checkOut);
 
-    // Calculate the difference in days
-    const timeDifference = checkOutDate - checkInDate;
-    const totalDays = timeDifference / (1000 * 60 * 60 * 24);
+        // Calculate the difference in days
+        const timeDifference = checkOutDate - checkInDate;
+        const days = timeDifference / (1000 * 60 * 60 * 24);
 
-    const [totalPrice, setTotalPrice] = useState(
-        hotelDetail.numOfRoom * hotelDetail.price * totalDays
-    );
+        // Calculate the new price
+        const price = hotelDetail.numOfRoom * hotelDetail.price * days;
 
-    const [currencyCode, setCurrencyCode] = useState(hotelDetail.currency_code);
-    // setHotelDetail(route.params.data);
+        // Update the total state with the new values
+        setTotal({ days, price });
+    };
+
     const handleBookingConfirmation = async () => {
-        console.log(
-            firstName,
-            lastName,
-            email,
-            address,
-            city,
-            mobilePhone,
-            hotelDetail,
-            totalPrice
-        );
-
         try {
             const response = await handleBooking(
                 firstName,
                 lastName,
-                email,
-                address,
-                city,
-                mobilePhone,
+                account.email,
+                account.address,
+                account.city,
+                account.mobile_number,
                 hotelDetail,
-                totalPrice
+                total.price
             );
 
             // If booking is successful, navigate to the "Success" page
@@ -136,6 +156,7 @@ export default function Book({ route }) {
             // Handle the error if needed
         }
     };
+
     return (
         <TouchableWithoutFeedback
             onPress={() => {
@@ -170,8 +191,10 @@ export default function Book({ route }) {
                         <Text>Email Address: </Text>
                         <TextInput
                             style={styles.input}
-                            value={email}
-                            onChangeText={(text) => setEmail(text)}
+                            value={account?.email}
+                            onChangeText={(text) =>
+                                setAccount({ ...account, email: text })
+                            }
                         />
                     </View>
                     <View
@@ -180,8 +203,10 @@ export default function Book({ route }) {
                         <Text>Address: </Text>
                         <TextInput
                             style={styles.input}
-                            value={address}
-                            onChangeText={(text) => setAddress(text)}
+                            value={account?.address}
+                            onChangeText={(text) =>
+                                setAccount({ ...account, address: text })
+                            }
                         />
                     </View>
                     <View
@@ -190,8 +215,10 @@ export default function Book({ route }) {
                         <Text>City: </Text>
                         <TextInput
                             style={styles.input}
-                            value={city}
-                            onChangeText={(text) => setCity(text)}
+                            value={account?.city}
+                            onChangeText={(text) =>
+                                setAccount({ ...account, city: text })
+                            }
                         />
                     </View>
                     <View
@@ -200,9 +227,11 @@ export default function Book({ route }) {
                         <Text>Mobile Number: </Text>
                         <TextInput
                             style={styles.input}
-                            value={mobilePhone}
+                            value={account?.mobile_number}
                             keyboardType="numeric"
-                            onChangeText={(text) => setMobilePhone(text)}
+                            onChangeText={(text) =>
+                                setAccount({ ...account, mobile_number: text })
+                            }
                         />
                     </View>
                     <View style={styles.horLine}></View>
@@ -217,18 +246,41 @@ export default function Book({ route }) {
                         </Text>
                         <View style={styles.horLine}></View>
                         <View style={styles.dateContainer}>
-                            <View style={styles.column}>
+                            <View style={{ flexDirection: "row" }}>
+                                <Text style={{ width: "50%" }}>Check-in</Text>
                                 <Text>Check-in</Text>
-                                <Text style={{ fontWeight: "bold" }}>
-                                    {hotelDetail.checkIn}
-                                </Text>
                             </View>
-                            <View style={styles.separator}></View>
-                            <View style={styles.column}>
-                                <Text>Check-out</Text>
-                                <Text style={{ fontWeight: "bold" }}>
-                                    {hotelDetail.checkOut}
-                                </Text>
+                            <View>
+                                <DatePicker
+                                    style={{
+                                        borderColor: "white",
+                                        fontWeight: "bold",
+                                    }}
+                                    customStyles={{
+                                        placeholderText: {
+                                            fontSize: 20,
+                                            color: "black",
+                                            fontWeight: "bold",
+                                        }, // placeHolder style
+                                        contentText: {
+                                            fontSize: 20,
+                                            color: "black",
+                                            fontWeight: "bold",
+                                        }, //after selected text Style
+                                    }} // optional
+                                    allowFontScaling={false} // optional
+                                    placeholder={`${hotelDetail.checkIn} -> ${hotelDetail.checkOut}`}
+                                    mode={"range"}
+                                    markText={" "}
+                                    dateSplitter={"->"}
+                                    ButtonText={"Confirm"}
+                                    blockBefore={true}
+                                    inFormat="YYYY-MM-DD"
+                                    outFormat="YYYY-MM-DD"
+                                    onConfirm={(value) => {
+                                        onDateChange(value);
+                                    }}
+                                />
                             </View>
                         </View>
                         <View style={styles.horLine}></View>
@@ -255,8 +307,8 @@ export default function Book({ route }) {
                                     {hotelDetail.currency_code}
                                 </Text>
                                 <Text style={{ fontWeight: "bold" }}>
-                                    {totalPrice.toLocaleString("en-US")}{" "}
-                                    {hotelDetail.currency_code}/ {totalDays}{" "}
+                                    {total.price.toLocaleString("en-US")}{" "}
+                                    {hotelDetail.currency_code}/ {total.days}{" "}
                                     days
                                 </Text>
                             </View>

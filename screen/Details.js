@@ -102,8 +102,7 @@ export default function Details({ route }) {
                             (img) => img.url_original
                         ) || "" // Get the first photo's original URL
                 );
-
-                setPhoto(dataPhoto);
+                if (dataPhoto) setPhoto(dataPhoto);
             } catch (error) {
                 console.error(error);
             }
@@ -132,7 +131,6 @@ export default function Details({ route }) {
             ],
         ]);
     }
-    console.log(route.params.searchID);
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>

@@ -10,11 +10,19 @@ import {
 } from "react-native";
 import styles from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import format from "date-fns/format";
 
 export default function Home({ navigation }) {
     const currentDate = new Date();
     const currentHours = currentDate.getHours();
     const [refreshing, setRefreshing] = useState(false);
+    const [account, setAccount] = useState();
+    const [recentSearch, setRecentSearch] = useState([]);
+    const [greeting, setGreeting] = useState();
+
+    const today = new Date();
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    const nextTwoDay = new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
@@ -24,9 +32,6 @@ export default function Home({ navigation }) {
             getRecentViews();
         }, 2000);
     }, []);
-    const [account, setAccount] = useState();
-    const [recentSearch, setRecentSearch] = useState([]);
-    const [greeting, setGreeting] = useState();
     const imageList = [
         {
             locationName: "Da Nang",
@@ -168,7 +173,7 @@ export default function Home({ navigation }) {
         );
     };
 
-// console.log(account);
+    // console.log(account);
 
     return (
         <ScrollView
@@ -245,7 +250,17 @@ export default function Home({ navigation }) {
                                       onPress={() =>
                                           navigation.navigate("Details", {
                                               searchID: val.searchID,
-                                              data: val.data,
+                                              data: {
+                                                  ...val.data,
+                                                  startDate: format(
+                                                      tomorrow,
+                                                      "yyyy-MM-dd"
+                                                  ),
+                                                  endDate: format(
+                                                      nextTwoDay,
+                                                      "yyyy-MM-dd"
+                                                  ),
+                                              },
                                               item: val.item,
                                           })
                                       }
