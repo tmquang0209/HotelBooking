@@ -10,6 +10,7 @@ import {
 import styles from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { SafeAreaView } from "react-native";
 
 export default function Notification() {
     const [show, setShow] = useState(false);
@@ -84,51 +85,55 @@ export default function Notification() {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
         >
-            {/* <ActivityIndicator size="large" animating={show} /> */}
-            {account ? (
-                <View
-                    style={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginBottom: 10,
-                    }}
-                >
-                    <Text>
-                        You have {notification ? notification.length : 0} new
-                        notification
-                    </Text>
-                </View>
-            ) : (
-                ""
-            )}
-
-            <View>
-                {notification ? (
-                    notification.map((item) => (
-                        <View
-                            style={{
-                                borderWidth: 1,
-                                padding: 10,
-                                borderRadius: 10,
-                                marginBottom: 10,
-                            }}
-                            key={item.id}
-                        >
-                            <Text style={{ color: "gray" }}>{item.date}</Text>
-                            <Text>{item.content}</Text>
-                        </View>
-                    ))
-                ) : (
+            <SafeAreaView style={styles.container}>
+                {/* <ActivityIndicator size="large" animating={show} /> */}
+                {account ? (
                     <View
                         style={{
                             justifyContent: "center",
                             alignItems: "center",
+                            marginBottom: 10,
                         }}
                     >
-                        <Text>Sign in to receive notifications</Text>
+                        <Text>
+                            You have {notification ? notification.length : 0}{" "}
+                            new notification
+                        </Text>
                     </View>
+                ) : (
+                    ""
                 )}
-            </View>
+
+                <View>
+                    {notification ? (
+                        notification.map((item) => (
+                            <View
+                                style={{
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    borderRadius: 10,
+                                    marginBottom: 10,
+                                }}
+                                key={item.id}
+                            >
+                                <Text style={{ color: "gray" }}>
+                                    {item.date}
+                                </Text>
+                                <Text>{item.content}</Text>
+                            </View>
+                        ))
+                    ) : (
+                        <View
+                            style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text>Sign in to receive notifications</Text>
+                        </View>
+                    )}
+                </View>
+            </SafeAreaView>
         </ScrollView>
     );
 }

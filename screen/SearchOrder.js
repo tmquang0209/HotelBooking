@@ -99,7 +99,7 @@ export default function SearchOrder({ navigation }) {
             }}
         >
             <SafeAreaView style={styles.container}>
-                <View style={{ height: 80 }}>
+                <View style={{ height: 80, margin:15 }}>
                     <Text style={{ marginBottom: 10 }}>OrderID:</Text>
                     <TextInput
                         style={styles.input}
