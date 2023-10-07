@@ -272,7 +272,9 @@ export default function Home({ navigation }) {
                                                   height: 100,
                                               }}
                                               source={{
-                                                  uri: val.item.main_photo_url,
+                                                  uri:
+                                                      val.item.main_photo ||
+                                                      val.item.main_photo_url,
                                               }}
                                           />
                                           <Text

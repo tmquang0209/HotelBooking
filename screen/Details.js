@@ -47,15 +47,12 @@ const getDetails = async (
     }
 };
 
-const getDescription = async (hotelID, checkIn, checkOut) => {
+const getDescription = async (hotelID) => {
     const options = {
         method: "GET",
-        url: "https://apidojo-booking-v1.p.rapidapi.com/properties/get-description",
+        url: "https://api.toluu.site/post/getRooms.php?description",
         params: {
-            hotel_ids: hotelID,
-            check_out: checkOut,
-            languagecode: "vi-vn",
-            check_in: checkIn,
+            hotel_id: hotelID,
         },
         headers: {
             "X-RapidAPI-Key": API_KEY,
@@ -78,31 +75,23 @@ const handleBooking = (data, navigation) => {
 
 export default function Details({ route }) {
     const [detail, setDetail] = useState([]);
-    const [roomID, setRoomID] = useState();
     const [description, setDescription] = useState();
     const [photo, setPhoto] = useState();
     const navigation = useNavigation();
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const result = await getDetails(
-                    route.params.searchID,
-                    route.params.item.hotel_id,
-                    route.params.data.startDate,
-                    route.params.data.endDate,
-                    route.params.data.numOfRoom,
-                    route.params.data.numOfPeople
-                );
-                setDetail(result);
-                const roomIds = result[0]?.block?.map((e) => e.room_id) || [];
-                setRoomID(roomIds);
-                const dataPhoto = roomIds.map(
-                    (roomId) =>
-                        result[0].rooms[roomId].photos.map(
-                            (img) => img.url_original
-                        ) || "" // Get the first photo's original URL
-                );
-                if (dataPhoto) setPhoto(dataPhoto);
+                const options = {
+                    method: "GET",
+                    url: "https://api.toluu.site/post/getRooms.php?images",
+                    params: {
+                        hotel_id: route.params.item.id,
+                    },
+                };
+                const response = await axios.request(options);
+                const responseData = response.data.result;
+                const imgUrl = responseData.map((val) => val.image_url);
+                if (imgUrl.length != 0) setPhoto(imgUrl);
             } catch (error) {
                 console.error(error);
             }
@@ -110,12 +99,8 @@ export default function Details({ route }) {
 
         const fetchDescription = async () => {
             try {
-                const result = await getDescription(
-                    route.params.item.hotel_id,
-                    route.params.data.startDate,
-                    route.params.data.endDate
-                );
-                setDescription(result);
+                const result = await getDescription(route.params.item.id);
+                setDescription(result.result[0].content);
             } catch (error) {
                 console.error(error);
             }
@@ -126,19 +111,17 @@ export default function Details({ route }) {
 
     if (!photo) {
         setPhoto([
-            [
-                "https://user-images.githubusercontent.com/10515204/56117400-9a911800-5f85-11e9-878b-3f998609a6c8.jpg",
-            ],
+            "https://user-images.githubusercontent.com/10515204/56117400-9a911800-5f85-11e9-878b-3f998609a6c8.jpg",
         ]);
     }
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
                 <View>
                     {photo ? (
-                        // <Text></Text>
                         <SliderBox
-                            images={photo[0]}
+                            images={photo}
                             sliderBoxHeight={200}
                             onCurrentImagePressed={(index) =>
                                 console.warn(`image ${index} pressed`)
@@ -177,23 +160,22 @@ export default function Details({ route }) {
                     </Text>
                     <Text style={styles.address}>
                         <Ionicons name="location-outline" size={15} />{" "}
-                        {route.params.item.address}, {route.params.item.city}
+                        {route.params.item.address},{" "}
+                        {route.params.item.city_name}
                     </Text>
                     <Text style={styles.checkin}>
                         <Ionicons name="time-outline" size={15} /> Check-in:{" "}
-                        {route.params.item.checkin.from}{" "}
+                        {route.params.item.checkin?.from}{" "}
                         {route.params.data.startDate}
                     </Text>
                     <Text style={styles.checkin}>
                         <Ionicons name="time-outline" size={15} /> Check-out:{" "}
-                        {route.params.item.checkout.until}{" "}
+                        {route.params.item.checkout?.until}{" "}
                         {route.params.data.endDate}
                     </Text>
                     <Text style={styles.hotelName}>Description</Text>
                     <Text style={styles.description}>
-                        {description
-                            ? description[0].description
-                            : "No description"}
+                        {description ? description : "No description"}
                     </Text>
                 </View>
             </ScrollView>
@@ -203,10 +185,10 @@ export default function Details({ route }) {
                     handleBooking(
                         {
                             searchID: route.params.searchID,
-                            hotelID: route.params.item.hotel_id,
+                            hotelID: route.params.item.id,
                             hotelName: route.params.item.hotel_name,
                             address: route.params.item.address,
-                            city: route.params.item.city,
+                            city: route.params.item.city_name,
                             checkIn: route.params.data.startDate,
                             checkOut: route.params.data.endDate,
                             numOfPeople: route.params.data.numOfPeople,

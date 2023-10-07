@@ -127,7 +127,7 @@ export default function Book({ route }) {
         const timeDifference = checkOutDate - checkInDate;
         const days = timeDifference / (1000 * 60 * 60 * 24);
 
-        // Calculate the new price
+        // Calculate the new price based on the updated values
         const price = hotelDetail.numOfRoom * hotelDetail.price * days;
 
         // Update the total state with the new values
@@ -156,6 +156,30 @@ export default function Book({ route }) {
             // Handle the error if needed
         }
     };
+
+    const onSubGuestPress = () => {
+        if (hotelDetail.numOfPeople > 1) {
+            setHotelDetail((prevHotelDetail) => ({
+                ...prevHotelDetail,
+                numOfPeople: prevHotelDetail.numOfPeople - 1,
+                numOfRoom: Math.ceil((prevHotelDetail.numOfPeople - 1) / 2),
+            }));
+            calcTotalDay();
+            console.log(total);
+        }
+    };
+
+    const onPlusGuestPress = () => {
+        setHotelDetail((prevHotelDetail) => ({
+            ...prevHotelDetail,
+            numOfPeople: prevHotelDetail.numOfPeople + 1,
+            numOfRoom: Math.ceil((prevHotelDetail.numOfPeople + 1) / 2),
+        }));
+        calcTotalDay();
+        console.log(total);
+    };
+
+    // console.log(hotelDetail);
 
     return (
         <TouchableWithoutFeedback
@@ -284,12 +308,70 @@ export default function Book({ route }) {
                             </View>
                         </View>
                         <View style={styles.horLine}></View>
-                        <View style={styles.dateContainer}>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                margin: 10,
+                                justifyContent: "space-around",
+                            }}
+                        >
                             <View style={styles.column}>
                                 <Text>Guest</Text>
-                                <Text style={{ fontWeight: "bold" }}>
-                                    {hotelDetail.numOfPeople} people
-                                </Text>
+                            </View>
+                            <View style={styles.column}>
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        margin: 10,
+                                        justifyContent: "space-around",
+                                    }}
+                                >
+                                    <TouchableOpacity
+                                        style={{
+                                            // borderWidth: 1,
+                                            width: 30,
+                                            height: 30,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            borderRadius: 50,
+                                            backgroundColor: "green",
+                                        }}
+                                        onPress={() => onSubGuestPress()}
+                                    >
+                                        <Text
+                                            style={{
+                                                color: "#FFFFFF",
+                                                fontSize: 20,
+                                            }}
+                                        >
+                                            -
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <Text style={{ fontWeight: "bold" }}>
+                                        {hotelDetail.numOfPeople} people
+                                    </Text>
+                                    <TouchableOpacity
+                                        style={{
+                                            // borderWidth: 1,
+                                            width: 30,
+                                            height: 30,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            borderRadius: 50,
+                                            backgroundColor: "green",
+                                        }}
+                                        onPress={() => onPlusGuestPress()}
+                                    >
+                                        <Text
+                                            style={{
+                                                color: "#FFFFFF",
+                                                fontSize: 25,
+                                            }}
+                                        >
+                                            +
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                         <View style={styles.horLine}></View>

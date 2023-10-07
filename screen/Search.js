@@ -13,21 +13,16 @@ import Autocomplete from "react-native-autocomplete-input";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
 import styles from "../styles";
-import { API_KEY, API_HOST } from "@env";
 import { format } from "date-fns";
 
 const fetchAutoComplete = async (text) => {
     console.log(text);
     const options = {
         method: "GET",
-        url: "https://apidojo-booking-v1.p.rapidapi.com/locations/auto-complete",
+        url: "https://api.toluu.site/post/auto-complete.php",
         params: {
             text: text,
             languagecode: "en-us",
-        },
-        headers: {
-            "X-RapidAPI-Key": API_KEY,
-            "X-RapidAPI-Host": API_HOST,
         },
     };
 
@@ -46,9 +41,7 @@ export default function Search({ navigation }) {
         format(currentDate, "yyyy-MM-dd")
     );
 
-    const [endDate, setEndDate] = useState(
-        format(currentDate, "yyyy-MM-dd")
-    );
+    const [endDate, setEndDate] = useState(format(currentDate, "yyyy-MM-dd"));
 
     console.log(startDate, endDate);
     const [formatStartDate, setFormatStartDate] = useState(startDate);
@@ -104,9 +97,9 @@ export default function Search({ navigation }) {
 
         timerRef.current = setTimeout(async () => {
             const suggestions = await fetchAutoComplete(text);
-            setSuggestions(suggestions);
+            setSuggestions(suggestions.result);
             console.log(suggestions);
-        }, 2000);
+        }, 100);
     };
 
     return (
@@ -139,10 +132,6 @@ export default function Search({ navigation }) {
                             minDateRange={currentDate} // Add minDate prop here
                             allowFontScaling={false} // optional
                             placeholder={`${startDate} → ${endDate}`}
-                            // placeholder={`${format(
-                            //     startDate,
-                            //     "dd-MM-yyyy"
-                            // )} → ${format(endDate, "dd-MM-yyyy")}`}
                             mode={"range"}
                             markText={" "}
                             ButtonText={"Confirm"}
@@ -173,7 +162,7 @@ export default function Search({ navigation }) {
                     </View>
                     <View style={styles.inputContainer}>
                         <Text style={styles.peopleInputLabel}>
-                            Number of Peoples
+                            Number of People
                         </Text>
                         <TextInput
                             placeholder="Number of people"
@@ -190,7 +179,7 @@ export default function Search({ navigation }) {
                         <View style={styles.autocompleteContainer}>
                             <Autocomplete
                                 data={suggestions}
-                                value={location?.name || location}
+                                value={location?.city_name || location}
                                 placeholder="Where are you going?"
                                 hideResults={hideResults}
                                 onChangeText={(text) =>
@@ -202,12 +191,13 @@ export default function Search({ navigation }) {
                                     renderItem: ({ item }) => (
                                         <TouchableOpacity
                                             onPress={() => {
+                                                console.log(item);
                                                 setLocation(item);
                                                 setHideResults(true);
                                             }}
                                         >
                                             <Text style={styles.itemText}>
-                                                {item.name}
+                                                {item.city_name}
                                             </Text>
                                         </TouchableOpacity>
                                     ),
@@ -235,7 +225,9 @@ export default function Search({ navigation }) {
                             }
                         }}
                     >
-                        <Text style={styles.bookingButtonText}>Search</Text>
+                        <Text style={styles.bookingButtonText}>
+                            <Ionicons name="search-outline" size={15} /> Search
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </View>

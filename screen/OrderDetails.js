@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 export default function OrderDetails({ route }) {
     const navigation = useNavigation();
     const { params } = route;
-    const { booking, detail } = params;
+    const { booking } = params;
 
     const checkInDate = new Date(booking.check_in);
     const checkOutDate = new Date(booking.check_out);
@@ -47,11 +47,11 @@ export default function OrderDetails({ route }) {
             <View style={styles.horLine}></View>
             <Text style={styles.hotelName}>
                 <Ionicons name="business-outline" size={15} />{" "}
-                {detail[0].hotel_name}
+                {booking.hotel_name}
             </Text>
             <Text style={styles.address}>
                 <Ionicons name="location-outline" size={15} />
-                {detail[0].address}, {detail[0].city}
+                {booking.address}, {booking.city}
             </Text>
             <View style={styles.horLine}></View>
             <View style={styles.detailContainer}>
@@ -91,7 +91,7 @@ export default function OrderDetails({ route }) {
                     </Text>
                     <Text style={{ fontWeight: "bold" }}>
                         {booking?.total_price?.toLocaleString("en-US")}{" "}
-                        {detail.currency_code}/ {totalDays} days
+                        {booking.currency_code}/ {totalDays} days
                     </Text>
                 </View>
             </View>

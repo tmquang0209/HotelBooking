@@ -18,15 +18,13 @@ const searchRooms = async (
     // console.log(API_KEY, API_HOST);
     const options = {
         method: "GET",
-        url: "https://apidojo-booking-v1.p.rapidapi.com/properties/list",
+        url: "https://api.toluu.site/post/getRooms.php?list",
         params: {
-            offset: "0",
+            location_id: location.id,
             arrival_date: startDate,
             departure_date: endDate,
             guest_qty: numOfRoom,
-            dest_ids: location.city_ufi || location.dest_id,
             room_qty: numOfPeople,
-            search_type: location.dest_type,
             order_by: "popularity",
             languagecode: "en-us",
         },
@@ -38,7 +36,7 @@ const searchRooms = async (
 
     try {
         const response = await axios.request(options);
-        console.log("res: ", response.data.search_id);
+        console.log("res: ", response.data);
         return response.data; // Return the autocomplete suggestions
     } catch (error) {
         console.error(error);
@@ -115,7 +113,7 @@ export default function ListRooms({ route }) {
                 route.params.numOfPeople
             );
             setListRooms(roomData.result);
-            setSearchID(roomData.search_id);
+            setSearchID(roomData.location_id);
         } catch (error) {
             console.error(error);
         }

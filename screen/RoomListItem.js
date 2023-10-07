@@ -41,7 +41,7 @@ export default function RoomListItem(props) {
                 <Image
                     style={styles.roomImage}
                     source={{
-                        uri: item.main_photo_url,
+                        uri: item.main_photo,
                     }}
                 />
 
@@ -57,14 +57,7 @@ export default function RoomListItem(props) {
                             />
                         ))}
                     </View>
-                    <EllipsisText
-                        text={
-                            item.district +
-                            (item.district ? ", " : "") +
-                            item.city
-                        }
-                        maxWords={4}
-                    />
+                    <EllipsisText text={item.address} maxWords={4} />
                     <Text style={styles.priceText}>
                         {item.min_total_price.toLocaleString("en-US")}{" "}
                         {item.currency_code}
