@@ -43,8 +43,16 @@ export default function User({ navigation }) {
         navigation.navigate("ManageAccount");
     };
 
+    const handlePressChangePassword = () => {
+        navigation.navigate("ChangePassword");
+    };
+
     const handlePressBookings = () => {
         navigation.navigate("ListOrders", { account });
+    };
+
+    const handlePressManageBookings = () => {
+        navigation.navigate("AdminHome", { account });
     };
 
     const handlePressLogout = async () => {
@@ -152,6 +160,22 @@ export default function User({ navigation }) {
                         >
                             <Ionicons name="briefcase-outline" size={20} />
                             <Text style={styles.userTxt}>Bookings</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.menuUser}
+                            onPress={() => handlePressManageBookings()}
+                        >
+                            <Ionicons name="business-outline" size={20} />
+                            <Text style={styles.userTxt}>
+                                Manage reservations
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.menuUser}
+                            onPress={() => handlePressChangePassword()}
+                        >
+                            <Ionicons name="key-outline" size={20} />
+                            <Text style={styles.userTxt}>Change password</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.menuUser}

@@ -31,14 +31,17 @@ const handlePressLogin = async (username, password, navigation) => {
     try {
         const response = await axios.request(options);
         const responseJson = JSON.parse(response.data.info);
-        console.log(responseJson);
+
         if (!responseJson) {
             Alert.alert("Error", "Account doesn't exist.");
             return;
         }
 
-        const checkPassword = bcrypt.compareSync(password, responseJson.password);
-        console.log(checkPassword);
+        const checkPassword = bcrypt.compareSync(
+            password,
+            responseJson.password
+        );
+
         if (checkPassword) {
             await AsyncStorage.setItem("Account", JSON.stringify(responseJson));
             await AsyncStorage.setItem("isLoggedIn", "true");

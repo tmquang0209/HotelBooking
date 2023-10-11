@@ -7,14 +7,16 @@ import {
     Keyboard,
     TextInput,
     Alert,
+    SafeAreaView,
 } from "react-native";
 import styles from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DatePicker from "react-native-date-ranges";
-import format from "date-fns/format";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ManageAccount() {
+    const navigation = useNavigation();
     const [account, setAccount] = useState({ full_name: "", birthday: "" });
 
     const getAccount = async () => {
@@ -27,6 +29,9 @@ export default function ManageAccount() {
 
     useEffect(() => {
         getAccount();
+        navigation.setOptions({
+            title: "Manage your account",
+        });
     }, []);
 
     const handleSubmitPress = async () => {
@@ -49,7 +54,7 @@ export default function ManageAccount() {
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <View style={styles.inputContainer}>
                     <Text style={styles.peopleInputLabel}>Full name</Text>
                     <TextInput
@@ -104,7 +109,6 @@ export default function ManageAccount() {
                         value={account.email}
                         onChangeText={(val) => console.log(val)}
                         editable={false}
-                        // selectTextOnFocus={false}
                     />
                 </View>
                 <View style={styles.inputContainer}>
@@ -136,7 +140,7 @@ export default function ManageAccount() {
                 >
                     <Text style={styles.bookingButtonText}>Edit</Text>
                 </TouchableOpacity>
-            </View>
+            </SafeAreaView>
         </TouchableWithoutFeedback>
     );
 }

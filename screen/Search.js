@@ -15,14 +15,15 @@ import axios from "axios";
 import styles from "../styles";
 import { format } from "date-fns";
 
-const fetchAutoComplete = async (text) => {
+const fetchAutoComplete = async (text, check_in, check_out) => {
     console.log(text);
     const options = {
         method: "GET",
         url: "https://api.toluu.site/post/auto-complete.php",
         params: {
             text: text,
-            languagecode: "en-us",
+            check_in,
+            check_out,
         },
     };
 
@@ -96,7 +97,11 @@ export default function Search({ navigation }) {
         setLocation(text);
 
         timerRef.current = setTimeout(async () => {
-            const suggestions = await fetchAutoComplete(text);
+            const suggestions = await fetchAutoComplete(
+                text,
+                formatStartDate,
+                formatEndDate
+            );
             setSuggestions(suggestions.result);
             console.log(suggestions);
         }, 100);
@@ -111,7 +116,7 @@ export default function Search({ navigation }) {
         >
             <View style={styles.container}>
                 <View style={styles.inputForm}>
-                    <View style={{ height: 60 }}>
+                    <View style={styles.inputContainer}>
                         <Text style={styles.dateInputLabel}>
                             Check-in - Check-out
                         </Text>

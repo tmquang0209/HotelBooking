@@ -16,7 +16,7 @@ export default StyleSheet.create({
     inputContainer: {
         flexDirection: "col",
         // alignItems: "center",
-        height: 60,
+        height: 70,
         marginBottom: 20,
     },
 
@@ -177,9 +177,10 @@ export default StyleSheet.create({
 
     roomImage: {
         width: 80,
-        height: 80,
+        height: "100%",
         borderRadius: 6,
         alignSelf: "center",
+        resizeMode: "cover",
     },
 
     roomDetails: {
@@ -266,8 +267,42 @@ export default StyleSheet.create({
     },
 
     userTxt: { fontSize: 15, paddingLeft: 10 },
+
     detailInfo: {
         paddingBottom: 5,
         fontSize: 15,
+    },
+
+    adminMenu: {
+        flexDirection: "column", // Change to column to stack rows vertically
+        paddingHorizontal: 20,
+        paddingVertical: 10, // Add some vertical padding
+        alignItems: "center", // Center items horizontally within the container
+    },
+
+    adminRow: {
+        flexDirection: "row", // Use row to create two columns within the row
+        justifyContent: "space-between", // Distribute items evenly along the row
+        width: "100%", // Ensure the row takes up the full width
+        marginBottom: 10, // Add some margin between rows
+    },
+
+    adminColumn: {
+        flex: 1,
+        height: 100,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    adminNumber: {
+        color: "#FFFFFF",
+        fontSize: 24,
+        fontWeight: "bold",
+    },
+
+    adminLabel: {
+        color: "#FFFFFF",
+        fontSize: 18,
+        marginTop: 5,
     },
 });

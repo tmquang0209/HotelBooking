@@ -20,6 +20,17 @@ import User from "./screen/User";
 import ManageAccount from "./screen/ManageAccount";
 import ForgotPassword from "./screen/ForgotPassword";
 import ListOrders from "./screen/ListOrder";
+import AdminHome from "./screen/AdminHome";
+import ChangePassword from "./screen/ChangePassword";
+import ListHotels from "./screen/ListHotels";
+import ListBookings from "./screen/ListBookings";
+import HotelDetail from "./screen/HotelDetail";
+import AddHotel from "./screen/AddHotel";
+import ListLocations from "./screen/ListLocations";
+import LocationDetail from "./screen/LocationDetail";
+import AddLocation from "./screen/AddLocation";
+import ListUsers from "./screen/ListUsers";
+import UserDetail from "./screen/UserDetail";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -101,6 +112,26 @@ export default function App() {
                     component={ForgotPassword}
                 />
                 <Stack.Screen name="ManageAccount" component={ManageAccount} />
+                <Stack.Screen
+                    name="ChangePassword"
+                    component={ChangePassword}
+                />
+                <Stack.Screen name="AdminHome" component={AdminHome} />
+                <Stack.Screen name="ListHotels" component={ListHotels} />
+                <Stack.Screen name="ListBookings" component={ListBookings} />
+                <Stack.Screen name="HotelDetail" component={HotelDetail} />
+                <Stack.Screen name="AddHotel" component={AddHotel} />
+                <Stack.Screen name="AddLocation" component={AddLocation} />
+                <Stack.Screen name="ListLocations" component={ListLocations} />
+                <Stack.Screen name="ListUsers" component={ListUsers} />
+                <Stack.Screen
+                    name="LocationDetail"
+                    component={LocationDetail}
+                />
+                <Stack.Screen
+                    name="UserDetail"
+                    component={UserDetail}
+                />
             </Stack.Navigator>
             <StatusBar auto />
         </NavigationContainer>

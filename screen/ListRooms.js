@@ -6,8 +6,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "../styles";
 import RoomListItem from "./RoomListItem";
 
-import { API_KEY, API_HOST } from "@env";
-
 const searchRooms = async (
     location,
     startDate,
@@ -25,12 +23,6 @@ const searchRooms = async (
             departure_date: endDate,
             guest_qty: numOfRoom,
             room_qty: numOfPeople,
-            order_by: "popularity",
-            languagecode: "en-us",
-        },
-        headers: {
-            "X-RapidAPI-Key": API_KEY,
-            "X-RapidAPI-Host": API_HOST,
         },
     };
 

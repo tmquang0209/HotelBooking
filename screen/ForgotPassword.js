@@ -77,7 +77,7 @@ export default function ForgotPassword({ navigation }) {
             return buf.map(() => Math.floor(isaac.random() * 256));
         });
 
-        const saltRounds = 12;
+        const saltRounds = 1;
 
         bcrypt.hash(password, saltRounds, async (err, hash) => {
             if (err) {

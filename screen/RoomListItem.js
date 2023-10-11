@@ -2,6 +2,7 @@
 import { Dimensions, TouchableOpacity, View, Image, Text } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons"; // Import Ionicons from your preferred source
 import styles from "../styles";
+
 export default function RoomListItem(props) {
     const { item, handleRoomPress, searchID, navigation, route } = props;
     const EllipsisText = ({ text, maxWords }) => {
@@ -47,16 +48,6 @@ export default function RoomListItem(props) {
 
                 <View style={styles.roomDetails}>
                     <EllipsisText text={item.hotel_name} maxWords={4} />
-                    <View style={styles.starContainer}>
-                        {Array.from({ length: item.class }).map((_, index) => (
-                            <Ionicons
-                                key={index}
-                                name="star"
-                                color="#FFDF00"
-                                size={20}
-                            />
-                        ))}
-                    </View>
                     <EllipsisText text={item.address} maxWords={4} />
                     <Text style={styles.priceText}>
                         {item.min_total_price.toLocaleString("en-US")}{" "}

@@ -13,40 +13,6 @@ import { SliderBox } from "react-native-image-slider-box";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import styles from "../styles";
 
-const getDetails = async (
-    searchID,
-    hotelID,
-    startDate,
-    endDate,
-    numOfRoom,
-    numOfPeople
-) => {
-    // console.log(startDate, endDate);
-    const options = {
-        method: "GET",
-        url: "https://apidojo-booking-v1.p.rapidapi.com/properties/get-rooms",
-        params: {
-            departure_date: endDate,
-            rec_guest_qty: numOfPeople,
-            hotel_id: hotelID,
-            arrival_date: startDate,
-            search_id: searchID,
-        },
-        headers: {
-            "X-RapidAPI-Key": API_KEY,
-            "X-RapidAPI-Host": API_HOST,
-        },
-    };
-
-    try {
-        const response = await axios.request(options);
-        return response.data; // Return the autocomplete suggestions
-    } catch (error) {
-        console.error(error);
-        return []; // Return an empty array in case of an error
-    }
-};
-
 const getDescription = async (hotelID) => {
     const options = {
         method: "GET",
