@@ -44,7 +44,7 @@ const ItemView = (props) => {
 
                     <Text>{item.hotel_name}</Text>
                     <Text>
-                        {item.address}, {item.city_name}
+                        {item.hotel_address}, {item.city_name}
                     </Text>
                     <Text>
                         Booking by {item.first_name} {item.last_name}

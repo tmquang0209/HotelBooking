@@ -42,7 +42,10 @@ export default function Search({ navigation }) {
         format(currentDate, "yyyy-MM-dd")
     );
 
-    const [endDate, setEndDate] = useState(format(currentDate, "yyyy-MM-dd"));
+    const nextDay = new Date(currentDate);
+    nextDay.setDate(currentDate.getDate() + 1);
+
+    const [endDate, setEndDate] = useState(format(nextDay, "yyyy-MM-dd"));
 
     console.log(startDate, endDate);
     const [formatStartDate, setFormatStartDate] = useState(startDate);
@@ -70,7 +73,7 @@ export default function Search({ navigation }) {
         );
         parsedStartDate.setHours(0, 0, 0, 0); // Set the time to midnight for parsedStartDate
 
-        console.log(parsedStartDate < currentDate);
+        // console.log(parsedStartDate < currentDate);
 
         if (parsedStartDate < currentDate) {
             Alert.alert(

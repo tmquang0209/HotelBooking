@@ -128,12 +128,9 @@ export default function App() {
                     name="LocationDetail"
                     component={LocationDetail}
                 />
-                <Stack.Screen
-                    name="UserDetail"
-                    component={UserDetail}
-                />
+                <Stack.Screen name="UserDetail" component={UserDetail} />
             </Stack.Navigator>
-            <StatusBar auto />
+            <StatusBar style="auto" backgroundColor={"black"} />
         </NavigationContainer>
     );
 }

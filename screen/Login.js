@@ -78,7 +78,7 @@ export default function Login() {
                 <View style={styles.loginFormView}>
                     <Text style={styles.logoText}>Booking</Text>
                     <TextInput
-                        placeholder="Username"
+                        placeholder="Email"
                         placeholderColor="#c4c3cb"
                         style={styles.loginFormTextInput}
                         onChangeText={(val) => setUsername(val)}

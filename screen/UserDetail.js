@@ -26,7 +26,6 @@ export default function UserDetail({ navigation, route }) {
         try {
             const response = await axios.request(options);
             const responseData = response.data;
-            console.log(responseData);
             const title = responseData.msgCode === 1 ? "Success" : "Error";
             Alert.alert(title, responseData.message);
         } catch (err) {
@@ -63,7 +62,6 @@ export default function UserDetail({ navigation, route }) {
                     placeholder={item.birthday}
                     selectedBgColor="#3897f1"
                     selectedTextColor="white"
-                    calendarBgColor="#3897f1"
                     blockAfter={true}
                     onConfirm={(cur) => {
                         console.log(cur);
@@ -73,7 +71,9 @@ export default function UserDetail({ navigation, route }) {
                             birthday: cur.currentDate,
                         });
                     }}
-                    outFormat="DD-MM-YYYY"
+                    ButtonText={"Confirm"}
+                    inFormat="YYYY-MM-DD"
+                    outFormat="YYYY-MM-DD"
                 />
             </View>
             <View style={styles.inputContainer}>

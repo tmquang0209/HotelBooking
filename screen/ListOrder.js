@@ -11,24 +11,22 @@ const ItemView = (props) => {
         navigation.navigate("OrderDetails", { booking });
     };
 
-    console.log("book", booking);
-
     return (
         <TouchableOpacity onPress={() => handlePress()}>
             <View style={styles.roomContainer}>
                 <Image
-                        style={styles.roomImage}
-                        source={{
-                            uri: booking.main_photo,
-                        }}
-                    />
+                    style={styles.roomImage}
+                    source={{
+                        uri: booking.main_photo,
+                    }}
+                />
 
                 <View style={styles.roomDetails}>
                     <Text>
                         #{booking.id} {booking?.hotel_name}
                     </Text>
                     <Text>
-                        {booking?.address}, {booking?.city_name}
+                        {booking?.hotel_address}, {booking?.city_name}
                     </Text>
                     <Text style={styles.priceText}>
                         {booking?.total_price?.toLocaleString("en-us")}{" "}

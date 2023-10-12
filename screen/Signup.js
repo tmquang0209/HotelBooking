@@ -7,7 +7,6 @@ import {
     TouchableWithoutFeedback,
     View,
     TouchableOpacity,
-    AsyncStorage,
 } from "react-native";
 import styles from "../styles";
 import axios from "axios";
@@ -71,7 +70,7 @@ const handlePressSignup = async (
 export default function Signup() {
     const navigation = useNavigation();
     const [fullName, setFullName] = useState();
-    const [birthday, setBirthday] = useState(format(new Date(), "dd-mm-Y"));
+    const [birthday, setBirthday] = useState(format(new Date(), "dd-MM-Y"));
     const [email, setEmail] = useState();
     const [mobileNumber, setMobileNumber] = useState();
     const [password, setPassword] = useState();
@@ -128,11 +127,14 @@ export default function Signup() {
                         placeholder={birthday}
                         selectedBgColor="#3897f1"
                         selectedTextColor="white"
-                        calendarBgColor="#3897f1"
                         onConfirm={(cur) => {
                             setBirthday(cur.currentDate);
                             console.log(cur.currentDate);
                         }}
+                        ButtonText={"Confirm"}
+                        blockAfter={true}
+                        inFormat="YYYY-MM-DD"
+                        outFormat="YYYY-MM-DD"
                     />
 
                     <TextInput

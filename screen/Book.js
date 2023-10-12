@@ -3,11 +3,12 @@ import {
     Alert,
     View,
     Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    TextInput,
     Keyboard,
+    TextInput,
     ScrollView,
+    TouchableOpacity,
+    ActivityIndicator,
+    TouchableWithoutFeedback,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
@@ -53,6 +54,7 @@ const handleBooking = async (
 export default function Book({ route }) {
     const navigation = useNavigation();
 
+    const [show, setShow] = useState(false);
     const [account, setAccount] = useState();
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -64,6 +66,7 @@ export default function Book({ route }) {
     });
 
     const getAccountInfo = async () => {
+        setShow(true);
         try {
             const accountInfo = await AsyncStorage.getItem("Account");
             if (accountInfo) {
@@ -86,6 +89,7 @@ export default function Book({ route }) {
             console.error(error);
             // Handle the error if needed
         }
+        setShow(false);
     };
 
     const onDateChange = (value) => {
@@ -135,6 +139,7 @@ export default function Book({ route }) {
     };
 
     const handleBookingConfirmation = async () => {
+        setShow(true);
         try {
             const response = await handleBooking(
                 firstName,
@@ -155,6 +160,7 @@ export default function Book({ route }) {
             console.error(error);
             // Handle the error if needed
         }
+        setShow(false);
     };
 
     const onSubGuestPress = () => {
@@ -428,8 +434,15 @@ export default function Book({ route }) {
                             )
                         }
                         style={styles.bookingButton}
+                        disabled={show}
                     >
-                        <Text style={styles.bookingButtonText}>Book Now</Text>
+                        {show ? (
+                            <ActivityIndicator size="large" animating={true} />
+                        ) : (
+                            <Text style={styles.bookingButtonText}>
+                                Book Now
+                            </Text>
+                        )}
                     </TouchableOpacity>
                 </View>
             </ScrollView>

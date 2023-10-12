@@ -14,7 +14,6 @@ const ItemView = (props) => {
                         styles.roomImage,
                         {
                             width: 45,
-                            justifyContent: "center",
                             borderRightWidth: 1,
                             borderRadius: 0,
                         },
@@ -62,6 +61,9 @@ export default function ListUsers({ navigation }) {
         });
         fetchUsers();
     }, []);
+
+    if (list) list.map((item) => console.log(item.full_name));
+
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
@@ -69,8 +71,6 @@ export default function ListUsers({ navigation }) {
                 renderItem={({ item }) => (
                     <ItemView item={item} handleUserPress={handleUserPress} />
                 )}
-                //Setting the number of column
-                // numColumns={3}
                 keyExtractor={(item, index) => index}
             />
         </SafeAreaView>

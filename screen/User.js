@@ -161,15 +161,17 @@ export default function User({ navigation }) {
                             <Ionicons name="briefcase-outline" size={20} />
                             <Text style={styles.userTxt}>Bookings</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.menuUser}
-                            onPress={() => handlePressManageBookings()}
-                        >
-                            <Ionicons name="business-outline" size={20} />
-                            <Text style={styles.userTxt}>
-                                Manage reservations
-                            </Text>
-                        </TouchableOpacity>
+                        {account.type === "admin" && (
+                            <TouchableOpacity
+                                style={styles.menuUser}
+                                onPress={() => handlePressManageBookings()}
+                            >
+                                <Ionicons name="business-outline" size={20} />
+                                <Text style={styles.userTxt}>
+                                    Manage reservations
+                                </Text>
+                            </TouchableOpacity>
+                        )}
                         <TouchableOpacity
                             style={styles.menuUser}
                             onPress={() => handlePressChangePassword()}

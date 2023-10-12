@@ -10,9 +10,10 @@ import axios from "axios";
 export default function OrderDetails({ route }) {
     const navigation = useNavigation();
     const { params } = route;
-    const { booking } = params;
+    // const { booking } = params;
 
     const [account, setAccount] = useState();
+    const [booking, setBooking] = useState(params.booking);
 
     const checkInDate = new Date(booking.check_in);
     const checkOutDate = new Date(booking.check_out);
@@ -38,7 +39,7 @@ export default function OrderDetails({ route }) {
 
         try {
             await axios.request(options);
-            booking.status = "check_in";
+            setBooking({ ...booking, status: "check_in" });
             Alert.alert("Message", "Check-in successful");
         } catch (err) {
             console.error(err);
@@ -58,26 +59,24 @@ export default function OrderDetails({ route }) {
         try {
             const response = await axios.request(options);
             const responseData = response.data;
-            console.log(responseData);
-            booking.status = "check_out";
+            setBooking({ ...booking, status: "check_out" });
             Alert.alert("Message", "Check-out successful");
         } catch (err) {
             console.error(err);
         }
     };
 
-    const onCancelPress = async () => {
+    const handleCancel = async () => {
         const options = {
             method: "GET",
-            url: "https://api.toluu.site/post/booking.php?update",
+            url: "https://api.toluu.site/post/booking.php?updateStatus",
             params: { id: booking.id, status: "cancel" },
         };
 
         try {
             const response = await axios.request(options);
             const responseData = response.data;
-            console.log(responseData);
-            booking.status = "cancel";
+            setBooking({ ...booking, status: "cancel" });
             Alert.alert(
                 "Message",
                 "The reservation has been successfully canceled"
@@ -85,6 +84,13 @@ export default function OrderDetails({ route }) {
         } catch (err) {
             console.error(err);
         }
+    };
+
+    const onCancelPress = () => {
+        Alert.alert("Message", "Are you want to cancel this booking?", [
+            { text: "Cancel" },
+            { text: "Confirm", onPress: () => handleCancel() },
+        ]);
     };
 
     useEffect(() => {
@@ -138,7 +144,7 @@ export default function OrderDetails({ route }) {
                 </Text>
                 <Text style={styles.address}>
                     <Ionicons name="location-outline" size={15} />
-                    {booking.address}, {booking.city}
+                    {booking.hotel_address}, {booking.city_name}
                 </Text>
                 <View style={styles.horLine}></View>
                 <View style={styles.detailContainer}>

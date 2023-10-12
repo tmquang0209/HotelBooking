@@ -76,7 +76,6 @@ export default function ManageAccount() {
                         placeholder={account.birthday}
                         selectedBgColor="#3897f1"
                         selectedTextColor="white"
-                        calendarBgColor="#3897f1"
                         blockAfter={true}
                         onConfirm={(cur) => {
                             console.log(cur);
