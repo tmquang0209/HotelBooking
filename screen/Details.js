@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import { API_KEY, API_HOST } from "@env";
 import { SliderBox } from "react-native-image-slider-box";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import styles from "../styles";
@@ -19,10 +18,6 @@ const getDescription = async (hotelID) => {
         url: "https://api.toluu.site/post/getRooms.php?description",
         params: {
             hotel_id: hotelID,
-        },
-        headers: {
-            "X-RapidAPI-Key": API_KEY,
-            "X-RapidAPI-Host": API_HOST,
         },
     };
 

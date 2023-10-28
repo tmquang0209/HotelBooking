@@ -1,10 +1,18 @@
-﻿import React, { useState, useEffect } from "react";
-import { View, Text, FlatList } from "react-native";
+﻿import React, { useState, useEffect, useRef, useMemo } from "react";
+import {
+    View,
+    Text,
+    FlatList,
+    DrawerLayoutAndroid,
+    TextInput,
+    TouchableOpacity,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "../styles";
 import RoomListItem from "./RoomListItem";
+import RadioGroup from "react-native-radio-buttons-group";
 
 const searchRooms = async (
     location,
@@ -13,7 +21,6 @@ const searchRooms = async (
     numOfRoom,
     numOfPeople
 ) => {
-    // console.log(API_KEY, API_HOST);
     const options = {
         method: "GET",
         url: "https://api.toluu.site/post/getRooms.php?list",
@@ -28,7 +35,6 @@ const searchRooms = async (
 
     try {
         const response = await axios.request(options);
-        console.log("res: ", response.data);
         return response.data; // Return the autocomplete suggestions
     } catch (error) {
         console.error(error);
@@ -86,7 +92,7 @@ const handleRoomPress = async (searchID, data, item, navigation) => {
         item,
     });
     // navigation.navigate("Dashboard");
-    console.log(`Selected hotel ID: ${item.hotel_id}`);
+    // console.log(`Selected hotel ID: ${item.hotel_id}`);
 };
 
 export default function ListRooms({ route }) {
@@ -94,6 +100,31 @@ export default function ListRooms({ route }) {
     const [listRooms, setListRooms] = useState([]);
     const [searchID, setSearchID] = useState(null);
     const navigation = useNavigation();
+    const draw = useRef(null);
+    const [drawPosition, setDrawPosition] = useState("right");
+
+    const radioButtons = useMemo(
+        () => [
+            {
+                id: "1", // acts as primary key, should be unique and non-empty string
+                label: "Increase",
+                value: "",
+            },
+            {
+                id: "2",
+                label: "Decrease",
+                value: "",
+            },
+        ],
+        []
+    );
+
+    const [selectedId, setSelectedId] = useState();
+
+    const [min, setMin] = useState(0);
+    const [max, setMax] = useState(0);
+
+    const [filterRooms, setFilterRooms] = useState(listRooms);
 
     const fetchRooms = async () => {
         try {
@@ -105,6 +136,7 @@ export default function ListRooms({ route }) {
                 route.params.numOfPeople
             );
             setListRooms(roomData.result);
+            setFilterRooms(roomData.result)
             setSearchID(roomData.location_id);
         } catch (error) {
             console.error(error);
@@ -117,31 +149,124 @@ export default function ListRooms({ route }) {
         if (location) {
             navigation.setOptions({
                 title: route.params.location.city_name,
+                headerRight: () => {
+                    return (
+                        <Text onPress={() => draw.current.openDrawer()}>
+                            Filter
+                        </Text>
+                    );
+                },
             });
         }
     }, []);
 
-    // console.log(listRooms);
-    return (
-        <View style={styles.container}>
-            {listRooms?.zero_results_message ? (
-                <View>
-                    <Text>{listRooms?.zero_results_message.title}</Text>
-                </View>
-            ) : (
-                <FlatList
-                    data={listRooms}
-                    renderItem={({ item }) => (
-                        <RoomListItem
-                            item={item}
-                            handleRoomPress={handleRoomPress}
-                            searchID={searchID}
-                            navigation={navigation}
-                            route={route}
-                        />
-                    )}
+    const handleFilter = () => {
+        let filteredRooms = [...listRooms]; // Create a new array with all rooms
+        console.log(max);
+        if (max > 0) {
+            filteredRooms = filteredRooms.filter(
+                (item) =>
+                    item.min_total_price >= min && item.min_total_price <= max
+            );
+        }
+
+        if (selectedId) {
+            if (selectedId == 1) {
+                filteredRooms.sort(
+                    (a, b) => a.min_total_price - b.min_total_price
+                );
+            } else if (selectedId == 2) {
+                filteredRooms.sort(
+                    (a, b) => b.min_total_price - a.min_total_price
+                );
+            }
+        }
+
+        setFilterRooms(filteredRooms); // Update the state with the filtered and sorted rooms
+        console.log(filteredRooms);
+    };
+
+    const navigationView = () => {
+        return (
+            <View style={[styles.container]}>
+                <Text>Sort</Text>
+                <RadioGroup
+                    radioButtons={radioButtons}
+                    onPress={setSelectedId}
+                    selectedId={selectedId}
                 />
-            )}
-        </View>
+                <Text>Price</Text>
+                <View style={{ flexDirection: "row" }}>
+                    <TextInput
+                        placeholder="Min"
+                        style={{
+                            width: 125,
+                            borderColor: "gray",
+                            borderWidth: 1,
+                            padding: 10,
+                        }}
+                        keyboardType="numeric"
+                        onChangeText={(num) => setMin(num)}
+                    />
+                    <Text style={{ justifyContent: "center", padding: 10 }}>
+                        {" "}
+                        -{" "}
+                    </Text>
+                    <TextInput
+                        placeholder="Max"
+                        style={{
+                            width: 125,
+                            borderColor: "gray",
+                            borderWidth: 1,
+                            padding: 10,
+                        }}
+                        keyboardType="numeric"
+                        onChangeText={(num) => setMax(num)}
+                    />
+                </View>
+                <TouchableOpacity style={styles.bookingButton}>
+                    <Text
+                        style={styles.bookingButtonText}
+                        onPress={() => handleFilter()}
+                    >
+                        Submit
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.bookingButton, { backgroundColor: "red" }]}
+                >
+                    <Text style={styles.bookingButtonText}>Reset</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    };
+    return (
+        <DrawerLayoutAndroid
+            ref={draw}
+            drawerWidth={300}
+            drawerPosition={drawPosition}
+            renderNavigationView={navigationView}
+        >
+            <View style={styles.container}>
+                {listRooms?.zero_results_message ? (
+                    <View>
+                        <Text>{listRooms?.zero_results_message.title}</Text>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={filterRooms}
+                        renderItem={({ item }) => (
+                            <RoomListItem
+                                item={item}
+                                handleRoomPress={handleRoomPress}
+                                searchID={searchID}
+                                navigation={navigation}
+                                route={route}
+                            />
+                        )}
+                    />
+                )}
+            </View>
+        </DrawerLayoutAndroid>
     );
 }

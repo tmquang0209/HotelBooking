@@ -11,6 +11,7 @@ import {
 import styles from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import format from "date-fns/format";
+import axios from "axios";
 
 export default function Home({ navigation }) {
     const currentDate = new Date();
@@ -19,6 +20,7 @@ export default function Home({ navigation }) {
     const [account, setAccount] = useState();
     const [recentSearch, setRecentSearch] = useState([]);
     const [greeting, setGreeting] = useState();
+    const [suggest, setSuggest] = useState([]);
 
     const today = new Date();
     const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
@@ -32,28 +34,6 @@ export default function Home({ navigation }) {
             getRecentViews();
         }, 2000);
     }, []);
-    const imageList = [
-        {
-            locationName: "Da Nang",
-            img: "https://cf.bstatic.com/xdata/images/city/600x600/688844.jpg?k=02892d4252c5e4272ca29db5faf12104004f81d13ff9db724371de0c526e1e15&o=",
-        },
-        {
-            locationName: "TP. Ho Chi Minh",
-            img: "https://cf.bstatic.com/xdata/images/city/600x600/688893.jpg?k=d32ef7ff94e5d02b90908214fb2476185b62339549a1bd7544612bdac51fda31&o=",
-        },
-        {
-            locationName: "Ha Noi",
-            img: "https://cf.bstatic.com/xdata/images/city/600x600/688853.jpg?k=f6427c8fccdf777e4bbc75fcd245e7c66204280181bea23350388c76c57348d1&o=",
-        },
-        {
-            locationName: "Vung Tau",
-            img: "https://cf.bstatic.com/xdata/images/city/600x600/688956.jpg?k=fc88c6ab5434042ebe73d94991e011866b18ee486476e475a9ac596c79dce818&o=",
-        },
-        {
-            locationName: "Da Lat",
-            img: "https://cf.bstatic.com/xdata/images/city/600x600/688831.jpg?k=7b999c7babe3487598fc4dd89365db2c4778827eac8cb2a47d48505c97959a78&o=",
-        },
-    ];
 
     const fetchAccount = async () => {
         const accountData = await AsyncStorage.getItem("Account");
@@ -62,6 +42,18 @@ export default function Home({ navigation }) {
             const parsedAccount = JSON.parse(accountData);
 
             setAccount(parsedAccount);
+        }
+    };
+
+    const fetchSuggest = async () => {
+        try {
+            const response = await axios.request({
+                url: "https://api.toluu.site/post/auto-complete.php?suggest",
+            });
+            const responseData = response.data;
+            setSuggest(responseData.result);
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -82,6 +74,7 @@ export default function Home({ navigation }) {
     useEffect(() => {
         fetchAccount();
         getRecentViews();
+        fetchSuggest();
 
         if (currentHours >= 0 && currentHours < 12) {
             setGreeting("Good morning, ");
@@ -91,89 +84,6 @@ export default function Home({ navigation }) {
             setGreeting("Good evening, ");
         }
     }, []);
-    console.log("state", account?.full_name);
-    const renderImageList = () => {
-        return (
-            <View style={{ flex: 1, marginTop: 10, flexDirection: "row" }}>
-                {imageList.map((val, i) =>
-                    i < 2 ? (
-                        <View
-                            key={val.locationName}
-                            style={{
-                                paddingBottom: 10,
-                                paddingRight: 10,
-                                overflow: "hidden",
-                            }}
-                        >
-                            <Image
-                                style={{
-                                    width:
-                                        Dimensions.get("window").width / 2 - 20,
-                                    height: 100,
-                                    resizeMode: "cover",
-                                }}
-                                source={{
-                                    uri: val.img,
-                                }}
-                            />
-                            <Text
-                                style={{
-                                    position: "absolute",
-                                    fontSize: 10,
-                                    color: "#FFFFFF",
-                                    paddingLeft: 10,
-                                }}
-                            >
-                                {val.locationName}
-                            </Text>
-                        </View>
-                    ) : null
-                )}
-            </View>
-        );
-    };
-
-    const renderImageList2 = () => {
-        return (
-            <View style={{ marginTop: 10, flexDirection: "row" }}>
-                {imageList.map((val, i) =>
-                    i >= 2 ? (
-                        <View
-                            key={val.locationName}
-                            style={{
-                                paddingBottom: 10,
-                                paddingRight: 5,
-                            }}
-                        >
-                            <Image
-                                style={{
-                                    width:
-                                        Dimensions.get("window").width / 4 + 20,
-                                    height: 100,
-                                    resizeMode: "cover",
-                                }}
-                                source={{
-                                    uri: val.img,
-                                }}
-                            />
-                            <Text
-                                style={{
-                                    position: "absolute",
-                                    fontSize: 10,
-                                    color: "#FFFFFF",
-                                    paddingLeft: 10,
-                                }}
-                            >
-                                {val.locationName}
-                            </Text>
-                        </View>
-                    ) : null
-                )}
-            </View>
-        );
-    };
-
-    // console.log(account);
 
     return (
         <ScrollView
@@ -212,17 +122,25 @@ export default function Home({ navigation }) {
                         <Text style={{ color: "white" }}>Search location</Text>
                     </TouchableOpacity>
                 </View>
-                {/* <View
+                <View
                     style={{
                         position: "absolute",
                         padding: 10,
                         // backgroundColor: "#FFFFFF",
                     }}
                 >
-                    <Text style={{ color: "#FFFFFF", fontSize: 20, fontWeight: "600" }}>
-                        {account ? greeting + account.full_name : greeting + "guest"}
+                    <Text
+                        style={{
+                            color: "#FFFFFF",
+                            fontSize: 15,
+                            fontWeight: "600",
+                        }}
+                    >
+                        {account
+                            ? greeting + account.full_name
+                            : greeting + "guest"}
                     </Text>
-                </View> */}
+                </View>
             </View>
             <View
                 style={[styles.container, { flex: 1, flexDirection: "column" }]}
@@ -292,8 +210,59 @@ export default function Home({ navigation }) {
                     </ScrollView>
                 </View>
 
-                {renderImageList()}
-                {renderImageList2()}
+                <View>
+                    <Text
+                        style={{
+                            fontSize: 15,
+                            paddingBottom: 10,
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Recommended location
+                    </Text>
+                    {suggest.map((el, i) => (
+                        <View
+                            style={{
+                                marginTop: i != 0 ? 10 : 0,
+                            }}
+                        >
+                            <TouchableOpacity
+                                key={el.city_name}
+                                onPress={() => {
+                                    navigation.navigate("ListRooms", {
+                                        location: el,
+                                        startDate: format(today, "yyyy-MM-dd"),
+                                        endDate: format(tomorrow, "yyyy-MM-dd"),
+                                        numOfPeople: 1,
+                                        numOfRoom: 1,
+                                    });
+                                    1;
+                                }}
+                            >
+                                <Image
+                                    style={{
+                                        width:
+                                            Dimensions.get("screen").width - 20,
+                                        height: 300,
+                                    }}
+                                    source={{
+                                        uri: el.image_url,
+                                    }}
+                                />
+                                <Text
+                                    style={{
+                                        position: "absolute",
+                                        fontSize: 15,
+                                        color: "#FFFFFF",
+                                        paddingLeft: 10,
+                                    }}
+                                >
+                                    {el.city_name}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                </View>
             </View>
         </ScrollView>
     );

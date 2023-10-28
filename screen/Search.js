@@ -16,7 +16,6 @@ import styles from "../styles";
 import { format } from "date-fns";
 
 const fetchAutoComplete = async (text, check_in, check_out) => {
-    console.log(text);
     const options = {
         method: "GET",
         url: "https://api.toluu.site/post/auto-complete.php",
@@ -47,10 +46,10 @@ export default function Search({ navigation }) {
 
     const [endDate, setEndDate] = useState(format(nextDay, "yyyy-MM-dd"));
 
-    console.log(startDate, endDate);
+    // console.log(startDate, endDate);
     const [formatStartDate, setFormatStartDate] = useState(startDate);
     const [formatEndDate, setFormatEndDate] = useState(endDate);
-    console.log(formatStartDate, formatEndDate);
+    // console.log(formatStartDate, formatEndDate);
 
     const [numOfRoom, setNumOfRoom] = useState(1);
     const [numOfPeople, setNumOfPeople] = useState(1);
@@ -106,7 +105,6 @@ export default function Search({ navigation }) {
                 formatEndDate
             );
             setSuggestions(suggestions.result);
-            console.log(suggestions);
         }, 100);
     };
 
@@ -199,7 +197,6 @@ export default function Search({ navigation }) {
                                     renderItem: ({ item }) => (
                                         <TouchableOpacity
                                             onPress={() => {
-                                                console.log(item);
                                                 setLocation(item);
                                                 setHideResults(true);
                                             }}
@@ -222,7 +219,6 @@ export default function Search({ navigation }) {
                                     "Please fill out information"
                                 );
                             } else {
-                                console.log(formatStartDate, formatEndDate);
                                 navigation.navigate("ListRooms", {
                                     location,
                                     startDate: formatStartDate,

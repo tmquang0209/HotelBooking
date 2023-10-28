@@ -1,26 +1,21 @@
 {
-  "cli": {
-    "version": ">= 5.3.0"
-  },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "env": {
-        "API_KEY": "aa2218a6a4msh8bb60c0148c2e77p1cc419jsnda107c695f85",
-        "API_HOST": "apidojo-booking-v1.p.rapidapi.com"
-      }
+    "cli": {
+        "version": ">= 5.3.0"
     },
-    "preview": {
-      "distribution": "internal",
-      "env": {
-        "API_KEY": "aa2218a6a4msh8bb60c0148c2e77p1cc419jsnda107c695f85",
-        "API_HOST": "apidojo-booking-v1.p.rapidapi.com"
-      }
+    "build": {
+        "development": {
+            "developmentClient": true,
+            "distribution": "internal"
+        },
+        "preview": {
+            "distribution": "internal",
+            "channel": "preview"
+        },
+        "production": {
+            "channel": "production"
+        }
     },
-    "production": {}
-  },
-  "submit": {
-    "production": {}
-  }
+    "submit": {
+        "production": {}
+    }
 }
