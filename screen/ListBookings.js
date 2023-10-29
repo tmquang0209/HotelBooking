@@ -9,10 +9,15 @@ import {
 } from "react-native";
 import styles from "../styles";
 import axios from "axios";
-import { SearchBar } from "react-native-elements";
+import { SearchBar, Badge } from "react-native-elements";
 
 const ItemView = (props) => {
     const { item, handleRoomPress } = props;
+    let status;
+    if (item.status === "booked") status = "primary";
+    else if (item.status === "cancel") status = "error";
+    else if (item.status === "check_in") status = "warning";
+    else if (item.status === "check_out") status = "success";
 
     return (
         <TouchableOpacity onPress={() => handleRoomPress(item)}>
@@ -25,20 +30,20 @@ const ItemView = (props) => {
                 />
 
                 <View style={styles.roomDetails}>
+                    <Badge
+                        value={item.status}
+                        status={status}
+                        containerStyle={{
+                            position: "absolute",
+                            top: 5,
+                            right: 10,
+                        }}
+                    />
                     <View style={{ flex: 1, flexDirection: "row" }}>
                         <View style={{ flex: 1 }}>
                             <Text style={{ fontSize: 15, fontWeight: "bold" }}>
                                 #{item.id}
                             </Text>
-                        </View>
-                        <View
-                            style={{
-                                flex: 1,
-                                alignItems: "flex-end",
-                                justifyContent: "flex-start",
-                            }}
-                        >
-                            <Text>{item.status}</Text>
                         </View>
                     </View>
 

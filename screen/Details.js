@@ -11,6 +11,7 @@ import axios from "axios";
 import { SliderBox } from "react-native-image-slider-box";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import styles from "../styles";
+import { el } from "date-fns/locale";
 
 const getDescription = async (hotelID) => {
     const options = {
@@ -36,10 +37,20 @@ const handleBooking = (data, navigation) => {
 
 export default function Details({ route }) {
     const [detail, setDetail] = useState([]);
+    const [review, setReview] = useState(0);
     const [description, setDescription] = useState();
     const [photo, setPhoto] = useState();
     const navigation = useNavigation();
+
+    console.log(Number.parseFloat(route.params.item.score).toFixed(1));
+
+    const onReviewedPress = () => {
+        navigation.navigate("ReviewDetails", { review });
+    };
+
     useEffect(() => {
+        setDetail(route.params.item);
+        console.log(detail);
         const fetchRooms = async () => {
             try {
                 const options = {
@@ -66,8 +77,29 @@ export default function Details({ route }) {
                 console.error(error);
             }
         };
+
+        const fetchReviewed = async () => {
+            const options = {
+                method: "GET",
+                url: "https://api.toluu.site/post/reviews.php?get",
+                params: {
+                    hotel_id: route.params.item.id,
+                },
+            };
+
+            try {
+                const response = await axios.request(options);
+                const responseData = response.data;
+                setReview(responseData.result);
+            } catch (error) {
+                console.error(error);
+                return []; // Return an empty array in case of an error
+            }
+        };
+
         fetchRooms();
         fetchDescription();
+        fetchReviewed();
     }, []);
 
     if (!photo) {
@@ -75,6 +107,13 @@ export default function Details({ route }) {
             "https://user-images.githubusercontent.com/10515204/56117400-9a911800-5f85-11e9-878b-3f998609a6c8.jpg",
         ]);
     }
+
+    let avgScore = 0;
+    review &&
+        review.map((el) => {
+            avgScore += el.star;
+        });
+    console.log(avgScore);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -84,10 +123,7 @@ export default function Details({ route }) {
                         <SliderBox
                             images={photo}
                             sliderBoxHeight={200}
-                            onCurrentImagePressed={(index) =>
-                                console.warn(`image ${index} pressed`)
-                            }
-                            dotColor="#FFEE58"
+                            dotColor="#FFFFFF"
                             inactiveDotColor="#90A4AE"
                             paginationBoxVerticalPadding={20}
                             paginationBoxStyle={styles.paginationBox}
@@ -105,13 +141,14 @@ export default function Details({ route }) {
                     <Text style={styles.hotelName}>
                         {route.params.item.hotel_name}
                     </Text>
-                    <Text style={styles.address}>
-                        {detail[0]?.host_score
-                            ? `${detail[0]?.host_score.toFixed(2)} (${
-                                  detail[0]?.host_score_count
-                              } reviews)`
-                            : "No reviews available"}
-                    </Text>
+                    <TouchableOpacity onPress={onReviewedPress}>
+                        <Text style={styles.address}>
+                            <Ionicons name="star" color={"#FDCC0D"} size={15} />{" "}
+                            {avgScore
+                                ? `${avgScore} / 5 (${review.length} reviews)`
+                                : "No reviews available"}
+                        </Text>
+                    </TouchableOpacity>
                     <Text style={styles.price}>
                         <Ionicons name="cash-outline" size={15} />{" "}
                         {route.params.item.min_total_price.toLocaleString(

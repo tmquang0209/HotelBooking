@@ -25,7 +25,7 @@ const ItemView = (props) => {
 
                 <View style={styles.roomDetails}>
                     <Text>{item.hotel_name}</Text>
-                    <Text>{item.address}</Text>
+                    <Text>{item.hotel_address}</Text>
                     <Text>
                         Booking by {item.first_name} {item.last_name}
                     </Text>

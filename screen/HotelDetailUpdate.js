@@ -1,30 +1,28 @@
 ﻿import React, { useEffect, useState } from "react";
 import {
-    Text,
     View,
+    Text,
     Alert,
     Image,
     FlatList,
     Keyboard,
     TextInput,
     ScrollView,
-    SafeAreaView,
     TouchableOpacity,
     TouchableWithoutFeedback,
 } from "react-native";
-
-import axios from "axios";
 import styles from "../styles";
+import SelectDropdown from "react-native-select-dropdown";
+import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import SelectDropdown from "react-native-select-dropdown";
 
-export default function AddHotel({ navigation }) {
-    const [location, setLocation] = useState();
-    const [detail, setDetail] = useState({
-        main_photo: "https://static.thenounproject.com/png/3551560-200.png",
-        des_photo: [],
-    });
+export default function HotelDetailUpdate({ navigation, route }) {
+    const [detail, setDetail] = useState(route.params.hotel);
+    const [location, setLocation] = useState([]);
+    const [mainPhoto, setMainPhoto] = useState(route.params.hotel.main_photo);
+    const [desPhoto, setDesPhoto] = useState([]);
+    const [description, setDescription] = useState();
 
     const getLocation = async () => {
         const options = {
@@ -44,6 +42,64 @@ export default function AddHotel({ navigation }) {
         }
     };
 
+    const getDesPhoto = async () => {
+        try {
+            const options = {
+                method: "GET",
+                url: "https://api.toluu.site/post/getRooms.php?images",
+                params: {
+                    hotel_id: detail.id,
+                },
+            };
+            const response = await axios.request(options);
+            const responseData = response.data.result;
+            const imgUrl = responseData.map((val) => val.image_url);
+            if (imgUrl.length != 0) setDesPhoto(imgUrl);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const getDescription = async () => {
+        const options = {
+            method: "GET",
+            url: "https://api.toluu.site/post/getRooms.php?description",
+            params: {
+                hotel_id: detail.id,
+            },
+        };
+
+        try {
+            const response = await axios.request(options);
+            console.log(response.data);
+            setDescription(response.data.result[0].content);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const updateInfo = async () => {
+        const options = {
+            method: "POST",
+            url: "https://api.toluu.site/post/getRooms.php?update",
+            data: {
+                detail,
+                mainPhoto,
+                desPhoto,
+                description,
+            },
+        };
+
+        try {
+            const response = await axios.request(options);
+            const responseData = response.data;
+            Alert.alert("Message", "Update success.");
+            navigation.goBack();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const pickMainPhoto = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -54,9 +110,9 @@ export default function AddHotel({ navigation }) {
         });
 
         if (!result.canceled) {
-            setDetail({ ...detail, main_photo: result.assets[0].uri });
+            setMainPhoto(result.assets[0].uri);
 
-            if (detail.main_photo) {
+            if (mainPhoto) {
                 const localUri = result.assets[0].uri;
                 const filename = localUri.split("/").pop();
 
@@ -83,13 +139,9 @@ export default function AddHotel({ navigation }) {
                 try {
                     const response = await axios.request(options);
                     // Handle the server response as needed
-
-                    setDetail({
-                        ...detail,
-                        main_photo:
-                            "https://" +
-                            response.data.imageUrl.replace("../", ""),
-                    });
+                    setMainPhoto(
+                        "https://" + response.data.imageUrl.replace("../", "")
+                    );
                 } catch (error) {
                     console.error(error);
                 }
@@ -107,10 +159,7 @@ export default function AddHotel({ navigation }) {
         });
 
         if (!result.canceled) {
-            setDetail({
-                ...detail,
-                des_photo: [...detail.des_photo, result.assets[0].uri],
-            });
+            setDesPhoto([...desPhoto, result.assets[0].uri]);
 
             const localUri = result.assets[0].uri;
             const filename = localUri.split("/").pop();
@@ -142,10 +191,7 @@ export default function AddHotel({ navigation }) {
                     "../",
                     ""
                 )}`;
-                setDetail({
-                    ...detail,
-                    des_photo: [...detail.des_photo, urlImg],
-                });
+                setDesPhoto([...desPhoto, urlImg]);
             } catch (error) {
                 console.error(error);
             }
@@ -161,39 +207,52 @@ export default function AddHotel({ navigation }) {
                 text: "Confirm",
                 onPress: () => {
                     console.log("delete success");
-                    const newArr = [...detail.des_photo]; // Create a copy of the original array
+                    const newArr = [...desPhoto]; // Create a copy of the original array
                     newArr.splice(index, 1); // Remove one element at the specified index
-                    setDetail({
-                        ...detail,
-                        des_photo: newArr,
-                    }); // Update the state with the new array
+                    setDesPhoto(newArr); // Update the state with the new array
                     console.log(newArr);
                 },
             },
         ]);
     };
 
-    const addHotel = async () => {
+    const handleDeletePress = async () => {
         const options = {
             method: "POST",
-            url: "https://api.toluu.site/post/getRooms.php?add",
-            data: { detail },
+            url: "https://api.toluu.site/post/getRooms.php?delete",
+            data: {
+                detail,
+            },
         };
 
         try {
             const response = await axios.request(options);
-            const responseData = response.data;
-            Alert.alert("Message", responseData.message);
+            Alert.alert("Message", "Delete success");
+            navigation.goBack();
         } catch (err) {
             console.error(err);
         }
     };
 
+    const onDeletePress = async () => {
+        Alert.alert("Confirm", "Are you sure you want to delete this hotel?", [
+            {
+                text: "Cancel",
+                onPress: () => {
+                    null;
+                },
+            },
+            { text: "Confirm", onPress: handleDeletePress },
+        ]);
+    };
+
     useEffect(() => {
         navigation.setOptions({
-            title: "Add Hotel",
+            title: "Hotel Detail",
         });
         getLocation();
+        getDesPhoto();
+        getDescription();
     }, []);
 
     return (
@@ -203,14 +262,14 @@ export default function AddHotel({ navigation }) {
             }}
         >
             <ScrollView>
-                <SafeAreaView style={styles.container}>
+                <View style={styles.container}>
                     <TouchableOpacity
                         style={{ alignItems: "center", marginBottom: 10 }}
                         onPress={() => pickMainPhoto()}
                     >
-                        {detail.main_photo && (
+                        {mainPhoto && (
                             <Image
-                                source={{ uri: detail.main_photo }}
+                                source={{ uri: mainPhoto }}
                                 style={{ width: 200, height: 200 }}
                             />
                         )}
@@ -220,8 +279,23 @@ export default function AddHotel({ navigation }) {
                         <TextInput
                             style={styles.input}
                             placeholder="Hotel name"
+                            value={detail.hotel_name}
                             onChangeText={(val) =>
                                 setDetail({ ...detail, hotel_name: val })
+                            }
+                        />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.dateInputLabel}>
+                            Quantity room:
+                        </Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Quantity room"
+                            keyboardType="numeric"
+                            value={detail.qty_room.toString()}
+                            onChangeText={(val) =>
+                                setDetail({ ...detail, qty_room: val })
                             }
                         />
                     </View>
@@ -230,6 +304,7 @@ export default function AddHotel({ navigation }) {
                         <TextInput
                             style={styles.input}
                             placeholder="Address"
+                            value={detail.address}
                             onChangeText={(val) =>
                                 setDetail({ ...detail, address: val })
                             }
@@ -258,19 +333,9 @@ export default function AddHotel({ navigation }) {
                             search
                             buttonStyle={{ width: "100%" }}
                             defaultValue={detail.city_name}
-                            searchPlaceHolder="Select city"
-                        />
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.dateInputLabel}>
-                            Quantity room:
-                        </Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Quantity room"
-                            onChangeText={(val) =>
-                                setDetail({ ...detail, qty_room: val })
-                            }
+                            defaultValueByIndex={location.findIndex(
+                                (item) => item === detail.city_name
+                            )}
                         />
                     </View>
                     <View style={styles.inputContainer}>
@@ -280,18 +345,21 @@ export default function AddHotel({ navigation }) {
                         <TextInput
                             style={styles.input}
                             placeholder="Price per night"
+                            keyboardType="numeric"
+                            value={detail.min_total_price.toString()} // Convert to string
                             onChangeText={(val) =>
-                                setDetail({ ...detail, price: val })
+                                setDetail({ ...detail, min_total_price: val })
                             }
                         />
                     </View>
                     <View style={styles.inputContainer}>
                         <Text style={styles.dateInputLabel}>
-                            Currency Code:
+                            Currency code:
                         </Text>
                         <TextInput
                             style={styles.input}
                             placeholder="Currency code"
+                            value={detail.currency_code}
                             onChangeText={(val) =>
                                 setDetail({ ...detail, currency_code: val })
                             }
@@ -299,15 +367,17 @@ export default function AddHotel({ navigation }) {
                     </View>
 
                     <View style={[styles.inputContainer, { height: "auto" }]}>
-                        <Text style={styles.dateInputLabel}>Description:</Text>
+                        <Text style={styles.dateInputLabel}>Description</Text>
                         <TextInput
-                            style={[styles.input, { height: "auto" }]}
-                            placeholder="Description"
-                            onChangeText={(val) =>
-                                setDetail({ ...detail, description: val })
-                            }
-                            multiline
-                            numberOfLines={5}
+                            style={{
+                                borderWidth: 1,
+                                borderColor: "#ccc",
+                                borderRadius: 5,
+                                paddingHorizontal: 15,
+                            }}
+                            multiline={true}
+                            value={description}
+                            onChangeText={(text) => setDescription(text)} // Update description state
                         />
                     </View>
                     <View>
@@ -341,7 +411,7 @@ export default function AddHotel({ navigation }) {
                         }}
                     >
                         <FlatList
-                            data={detail.des_photo}
+                            data={desPhoto}
                             horizontal
                             renderItem={({ item, index }) => (
                                 <View>
@@ -383,11 +453,20 @@ export default function AddHotel({ navigation }) {
                     </View>
                     <TouchableOpacity
                         style={styles.bookingButton}
-                        onPress={() => addHotel()}
+                        onPress={() => updateInfo()}
                     >
-                        <Text style={styles.bookingButtonText}>Add</Text>
+                        <Text style={styles.bookingButtonText}>Edit</Text>
                     </TouchableOpacity>
-                </SafeAreaView>
+                    <TouchableOpacity
+                        style={[
+                            styles.bookingButton,
+                            { backgroundColor: "red" },
+                        ]}
+                        onPress={() => onDeletePress()}
+                    >
+                        <Text style={styles.bookingButtonText}>Delete</Text>
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </TouchableWithoutFeedback>
     );

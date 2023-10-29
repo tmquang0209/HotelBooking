@@ -3,9 +3,15 @@ import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import styles from "../styles";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { Badge } from "react-native-elements";
 
 const ItemView = (props) => {
     const { booking, navigation } = props;
+    let status;
+    if (booking.status === "booked") status = "primary";
+    else if (booking.status === "cancel") status = "error";
+    else if (booking.status === "check_in") status = "warning";
+    else if (booking.status === "check_out") status = "success";
 
     const handlePress = () => {
         navigation.navigate("OrderDetails", { booking });
@@ -33,6 +39,15 @@ const ItemView = (props) => {
                         {booking?.currency_code}
                     </Text>
                 </View>
+                <Badge
+                    value={booking.status}
+                    status={status}
+                    containerStyle={{
+                        // position: "absolute",
+                        top: 5,
+                        right: 0,
+                    }}
+                />
             </View>
         </TouchableOpacity>
     );

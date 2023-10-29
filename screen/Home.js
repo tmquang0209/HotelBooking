@@ -12,6 +12,7 @@ import styles from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import format from "date-fns/format";
 import axios from "axios";
+import { Rating } from "react-native-elements";
 
 export default function Home({ navigation }) {
     const currentDate = new Date();
@@ -225,9 +226,9 @@ export default function Home({ navigation }) {
                             style={{
                                 marginTop: i != 0 ? 10 : 0,
                             }}
+                            key={i}
                         >
                             <TouchableOpacity
-                                key={el.city_name}
                                 onPress={() => {
                                     navigation.navigate("ListRooms", {
                                         location: el,

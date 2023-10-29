@@ -2,10 +2,12 @@
 import {
     View,
     Text,
+    Image,
     FlatList,
+    ScrollView,
     SafeAreaView,
+    RefreshControl,
     TouchableOpacity,
-    TouchableWithoutFeedback,
 } from "react-native";
 import { SearchBar } from "react-native-elements";
 import styles from "../styles";
@@ -17,6 +19,12 @@ const ItemView = (props) => {
     return (
         <TouchableOpacity onPress={() => handlePressItem(item)}>
             <View style={styles.roomContainer}>
+                <Image
+                    style={styles.roomImage}
+                    source={{
+                        uri: item.image_url,
+                    }}
+                />
                 <View style={styles.roomDetails}>
                     <Text>City name: {item.city_name}</Text>
                     <Text>Label: {item.label}</Text>
@@ -32,9 +40,10 @@ export default function ListLocations({ navigation }) {
     const [search, setSearch] = useState("");
     const [location, setLocation] = useState([]);
     const [locationSearch, setLocationSearch] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
 
     const fetchLocations = async () => {
-        setShow(true);
+        // setShow(true);
         const options = {
             method: "GET",
             url: "https://api.toluu.site/post/auto-complete.php",
@@ -55,7 +64,7 @@ export default function ListLocations({ navigation }) {
     };
 
     const onSearchChange = (val) => {
-        setShow(true);
+        // setShow(true);
         const newArr = location.filter((item) =>
             item.city_name.toLowerCase().includes(val.toLowerCase())
         );
@@ -70,6 +79,12 @@ export default function ListLocations({ navigation }) {
 
     const handleAddPress = () => {
         navigation.navigate("AddLocation");
+    };
+
+    const onRefreshing = () => {
+        setRefreshing(true);
+        fetchLocations();
+        setRefreshing(false);
     };
 
     useEffect(() => {
@@ -111,6 +126,8 @@ export default function ListLocations({ navigation }) {
             </View>
             <FlatList
                 data={locationSearch}
+                refreshing={false}
+                onRefresh={onRefreshing}
                 renderItem={({ item }) => (
                     <ItemView item={item} handlePressItem={handlePressItem} />
                 )}

@@ -14,6 +14,7 @@ export default function OrderDetails({ route }) {
 
     const [account, setAccount] = useState();
     const [booking, setBooking] = useState(params.booking);
+    const [reviewed, setReviewed] = useState(false);
 
     const checkInDate = new Date(booking.check_in);
     const checkOutDate = new Date(booking.check_out);
@@ -27,6 +28,29 @@ export default function OrderDetails({ route }) {
         if (data) {
             const dataJson = JSON.parse(data);
             setAccount(dataJson);
+        }
+    };
+
+    const checkReview = async () => {
+        const options = {
+            method: "GET",
+            url: "https://api.toluu.site/post/reviews.php?check",
+            params: {
+                hotelID: booking.hotel_id,
+                email: booking.email,
+            },
+        };
+        console.log({
+            hotel_id: booking.hotel_id,
+            email: booking.email,
+        });
+        try {
+            const response = await axios.request(options);
+            const responseData = response.data;
+            // console.log(responseData);
+            setReviewed(responseData.result);
+        } catch (err) {
+            console.error();
         }
     };
 
@@ -93,11 +117,16 @@ export default function OrderDetails({ route }) {
         ]);
     };
 
+    const onReviewPress = () => {
+        navigation.navigate("Reviews", { booking });
+    };
+
     useEffect(() => {
         navigation.setOptions({
             title: "Order detail",
         });
         getAccount();
+        checkReview();
     }, []);
 
     return (
@@ -228,6 +257,24 @@ export default function OrderDetails({ route }) {
                             </TouchableOpacity>
                         </View>
                     )}
+
+                    {booking.status === "check_out" &&
+                        account?.email === booking.email &&
+                        !reviewed && (
+                            <View>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.bookingButton,
+                                        { backgroundColor: "green" },
+                                    ]}
+                                    onPress={() => onReviewPress()}
+                                >
+                                    <Text style={styles.bookingButtonText}>
+                                        Review
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                 </View>
             </View>
         </ScrollView>

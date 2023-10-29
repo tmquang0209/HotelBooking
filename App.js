@@ -24,13 +24,16 @@ import AdminHome from "./screen/AdminHome";
 import ChangePassword from "./screen/ChangePassword";
 import ListHotels from "./screen/ListHotels";
 import ListBookings from "./screen/ListBookings";
-import HotelDetail from "./screen/HotelDetail";
+import HotelDetailUpdate from "./screen/HotelDetailUpdate";
 import AddHotel from "./screen/AddHotel";
 import ListLocations from "./screen/ListLocations";
 import LocationDetail from "./screen/LocationDetail";
 import AddLocation from "./screen/AddLocation";
 import ListUsers from "./screen/ListUsers";
 import UserDetail from "./screen/UserDetail";
+import Reviews from "./screen/Reviews";
+import ReviewDetails from "./screen/ReviewDetails";
+import HotelDetail from "./screen/HotelDetail";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -120,6 +123,7 @@ export default function App() {
                 <Stack.Screen name="ListHotels" component={ListHotels} />
                 <Stack.Screen name="ListBookings" component={ListBookings} />
                 <Stack.Screen name="HotelDetail" component={HotelDetail} />
+                <Stack.Screen name="HotelDetailUpdate" component={HotelDetailUpdate} />
                 <Stack.Screen name="AddHotel" component={AddHotel} />
                 <Stack.Screen name="AddLocation" component={AddLocation} />
                 <Stack.Screen name="ListLocations" component={ListLocations} />
@@ -129,6 +133,8 @@ export default function App() {
                     component={LocationDetail}
                 />
                 <Stack.Screen name="UserDetail" component={UserDetail} />
+                <Stack.Screen name="Reviews" component={Reviews} />
+                <Stack.Screen name="ReviewDetails" component={ReviewDetails} />
             </Stack.Navigator>
             <StatusBar style="auto" backgroundColor={"black"} />
         </NavigationContainer>
