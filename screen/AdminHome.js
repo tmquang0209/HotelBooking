@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import styles from "../styles";
 import axios from "axios";
+import { useIsFocused } from "@react-navigation/native";
 
 const ItemView = (props) => {
     const { item, handleRoomPress } = props;
@@ -46,6 +47,7 @@ const ItemView = (props) => {
 };
 
 export default function AdminHome({ navigation }) {
+    const isFocused = useIsFocused();
     const [locations, setLocations] = useState();
     const [bookings, setBookings] = useState();
     const [hotels, setHotels] = useState();
@@ -138,11 +140,13 @@ export default function AdminHome({ navigation }) {
         navigation.setOptions({
             title: "Admin",
         });
-        fetchLocations();
-        fetchBookings();
-        fetchHotels();
-        fetchUsers();
-    }, []);
+        if (isFocused) {
+            fetchLocations();
+            fetchBookings();
+            fetchHotels();
+            fetchUsers();
+        }
+    }, [isFocused]);
 
     return (
         <SafeAreaView style={styles.container}>

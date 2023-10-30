@@ -113,7 +113,6 @@ export default function Details({ route }) {
         review.map((el) => {
             avgScore += el.star;
         });
-    console.log(avgScore);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -187,6 +186,7 @@ export default function Details({ route }) {
                             hotelName: route.params.item.hotel_name,
                             address: route.params.item.address,
                             city: route.params.item.city_name,
+                            max: route.params.item.available_rooms,
                             checkIn: route.params.data.startDate,
                             checkOut: route.params.data.endDate,
                             numOfPeople: route.params.data.numOfPeople,

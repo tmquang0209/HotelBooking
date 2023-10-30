@@ -176,16 +176,22 @@ export default function Book({ route }) {
     };
 
     const onPlusGuestPress = () => {
-        setHotelDetail((prevHotelDetail) => ({
-            ...prevHotelDetail,
-            numOfPeople: prevHotelDetail.numOfPeople + 1,
-            numOfRoom: Math.ceil((prevHotelDetail.numOfPeople + 1) / 2),
-        }));
-        calcTotalDay();
-        console.log(total);
+        if (hotelDetail.numOfRoom < hotelDetail.max) {
+            setHotelDetail((prevHotelDetail) => ({
+                ...prevHotelDetail,
+                numOfPeople: prevHotelDetail.numOfPeople + 1,
+                numOfRoom: Math.ceil((prevHotelDetail.numOfPeople + 1) / 2),
+            }));
+            calcTotalDay();
+        } else {
+            Alert.alert(
+                "Error",
+                "The number of people has reached the maximum"
+            );
+        }
     };
 
-    // console.log(hotelDetail);
+    console.log(hotelDetail);
 
     return (
         <TouchableWithoutFeedback
@@ -383,14 +389,14 @@ export default function Book({ route }) {
                         <View style={styles.horLine}></View>
                         <View style={styles.dateContainer}>
                             <View style={styles.column}>
-                                <Text>Quantity of Rooms</Text>
+                                {/* <Text>Quantity of Rooms</Text> */}
                                 <Text style={{ fontWeight: "bold" }}>
                                     Price
                                 </Text>
                             </View>
                             <View style={styles.column}>
                                 <Text>
-                                    {hotelDetail.numOfRoom} *{" "}
+                                    {hotelDetail.numOfRoom} rooms * {" "}
                                     {hotelDetail.price.toLocaleString("en-US")}{" "}
                                     {hotelDetail.currency_code}
                                 </Text>

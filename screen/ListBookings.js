@@ -10,6 +10,7 @@ import {
 import styles from "../styles";
 import axios from "axios";
 import { SearchBar, Badge } from "react-native-elements";
+import { useIsFocused } from "@react-navigation/native";
 
 const ItemView = (props) => {
     const { item, handleRoomPress } = props;
@@ -71,6 +72,7 @@ const ItemView = (props) => {
 };
 
 export default function ListBookings({ navigation }) {
+    const isFocused = useIsFocused();
     const [list, setList] = useState();
     const [searchList, setSearchList] = useState();
     const [search, setSearch] = useState("");
@@ -112,8 +114,8 @@ export default function ListBookings({ navigation }) {
             title: "List Bookings",
         });
 
-        fetchHotels();
-    }, []);
+        isFocused && fetchHotels();
+    }, [isFocused]);
 
     console.log(list);
 

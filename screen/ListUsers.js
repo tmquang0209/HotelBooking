@@ -3,6 +3,7 @@ import styles from "../styles";
 import { SafeAreaView, ScrollView, Text, View, FlatList } from "react-native";
 import axios from "axios";
 import { TouchableOpacity } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 
 const ItemView = (props) => {
     const { item, handleUserPress } = props;
@@ -34,6 +35,7 @@ const ItemView = (props) => {
 };
 
 export default function ListUsers({ navigation }) {
+    const isFocused = useIsFocused();
     const [list, setList] = useState();
 
     const fetchUsers = async () => {
@@ -59,8 +61,8 @@ export default function ListUsers({ navigation }) {
         navigation.setOptions({
             title: "List Users",
         });
-        fetchUsers();
-    }, []);
+        isFocused && fetchUsers();
+    }, [isFocused]);
 
     if (list) list.map((item) => console.log(item.full_name));
 

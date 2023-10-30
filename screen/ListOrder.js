@@ -2,7 +2,7 @@
 import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import styles from "../styles";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { Badge } from "react-native-elements";
 
 const ItemView = (props) => {
@@ -55,6 +55,7 @@ const ItemView = (props) => {
 
 export default function ListOrders({ route }) {
     const navigation = useNavigation();
+    const isFocused = useIsFocused();
     const account = route.params.account;
     const [bookings, setBookings] = useState();
 
@@ -68,7 +69,7 @@ export default function ListOrders({ route }) {
         try {
             const response = await axios.request(options);
             const responseData = response.data;
-            console.log(responseData);
+            // console.log(responseData);
             setBookings(responseData.result);
         } catch (err) {
             console.error(err);
@@ -79,8 +80,9 @@ export default function ListOrders({ route }) {
         navigation.setOptions({
             title: "Bookings",
         });
-        fetchBookingsData();
-    }, []);
+        isFocused && fetchBookingsData();
+        console.log(isFocused);
+    }, [isFocused]);
     // console.log("Bookings ", bookings);
     return (
         <View style={styles.container}>

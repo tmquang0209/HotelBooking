@@ -6,12 +6,12 @@ import {
     FlatList,
     SafeAreaView,
     Image,
-    Button,
 } from "react-native";
 import styles from "../styles";
 import axios from "axios";
 import { SearchBar } from "react-native-elements";
 import { ActivityIndicator } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 
 const ItemView = (props) => {
     const { item, handleHotelPress } = props;
@@ -41,6 +41,7 @@ const ItemView = (props) => {
 };
 
 export default function ListHotels({ navigation }) {
+    const isFocused = useIsFocused();
     const [show, setShow] = useState(false);
     const [list, setList] = useState();
     const [searchList, setSearchList] = useState();
@@ -92,8 +93,8 @@ export default function ListHotels({ navigation }) {
             ),
         });
 
-        fetchHotels();
-    }, []);
+        isFocused && fetchHotels();
+    }, [isFocused]);
 
     return (
         <SafeAreaView style={styles.container}>

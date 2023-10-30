@@ -12,7 +12,6 @@ import styles from "../styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import format from "date-fns/format";
 import axios from "axios";
-import { Rating } from "react-native-elements";
 
 export default function Home({ navigation }) {
     const currentDate = new Date();
@@ -38,11 +37,13 @@ export default function Home({ navigation }) {
 
     const fetchAccount = async () => {
         const accountData = await AsyncStorage.getItem("Account");
+        console.log("acc",accountData);
         if (accountData) {
             // Parse the JSON data
             const parsedAccount = JSON.parse(accountData);
-
             setAccount(parsedAccount);
+        } else {
+            setAccount();
         }
     };
 
@@ -76,7 +77,7 @@ export default function Home({ navigation }) {
         fetchAccount();
         getRecentViews();
         fetchSuggest();
-
+console.log(account);
         if (currentHours >= 0 && currentHours < 12) {
             setGreeting("Good morning, ");
         } else if (currentHours >= 12 && currentHours < 18) {
@@ -130,7 +131,7 @@ export default function Home({ navigation }) {
                         // backgroundColor: "#FFFFFF",
                     }}
                 >
-                    <Text
+                    {/* <Text
                         style={{
                             color: "#FFFFFF",
                             fontSize: 15,
@@ -140,7 +141,7 @@ export default function Home({ navigation }) {
                         {account
                             ? greeting + account.full_name
                             : greeting + "guest"}
-                    </Text>
+                    </Text> */}
                 </View>
             </View>
             <View

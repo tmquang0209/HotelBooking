@@ -4,7 +4,6 @@ import {
     Text,
     ScrollView,
     ActivityIndicator,
-    FlatList,
     RefreshControl,
 } from "react-native";
 import styles from "../styles";
@@ -15,8 +14,8 @@ import { SafeAreaView } from "react-native";
 export default function Notification() {
     const [show, setShow] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    const [notification, setNotification] = useState();
-    const [account, setAccount] = useState();
+    const [notification, setNotification] = useState([]);
+    const [account, setAccount] = useState(null);
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
@@ -26,17 +25,15 @@ export default function Notification() {
         }, 2000);
     }, []);
 
-    // Function to fetch the account information from AsyncStorage
     const fetchAccountInfo = async () => {
         const data = await AsyncStorage.getItem("Account");
         if (data) {
             const dataJson = JSON.parse(data);
             return dataJson;
         }
-        return null; // Handle the case where account data is not found
+        return null;
     };
 
-    // Function to fetch notifications using axios
     const fetchNotifications = async (account) => {
         const options = {
             method: "GET",
@@ -51,11 +48,10 @@ export default function Notification() {
             const response = await axios.request(options);
             const responseData = response.data;
             setShow(false);
-            // console.log(responseData);
-            return responseData.data || []; // Return an empty array if no data
+            return responseData.data || [];
         } catch (err) {
             console.error("Error fetching notification:", err);
-            return []; // Handle the error by returning an empty array
+            return [];
         }
     };
 
@@ -64,20 +60,26 @@ export default function Notification() {
             const accountData = await fetchAccountInfo();
             if (accountData) {
                 setAccount(accountData);
-
-                const notifications = await fetchNotifications(accountData);
-                setNotification(notifications);
+                fetchNotifications(accountData)
+                    .then((notifications) => {
+                        setNotification(notifications);
+                    })
+                    .catch((err) => {
+                        console.error("Error in fetchNotifications:", err);
+                    });
+            } else {
+                setAccount(null); // No user is logged in
+                setNotification([]); // Clear notifications
             }
         } catch (err) {
-            console.error("Error in getNotification:", err);
+            console.error("Error in fetchAccountInfo:", err);
         }
     };
 
     useEffect(() => {
         getNotification();
-    }, []);
-    // console.log(account);
-    // console.log("noti", notification);
+    }, [notification]);
+
     return (
         <ScrollView
             style={styles.container}
@@ -86,7 +88,6 @@ export default function Notification() {
             }
         >
             <SafeAreaView style={styles.container}>
-                {/* <ActivityIndicator size="large" animating={show} /> */}
                 {account ? (
                     <View
                         style={{
@@ -96,42 +97,39 @@ export default function Notification() {
                         }}
                     >
                         <Text>
-                            You have {notification ? notification.length : 0}{" "}
-                            new notification
+                            You have {notification.length} new notifications
                         </Text>
                     </View>
                 ) : (
-                    ""
+                    <View
+                        style={{
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Text>Sign in to receive notifications</Text>
+                    </View>
                 )}
 
                 <View>
-                    {notification ? (
-                        notification.map((item) => (
-                            <View
-                                style={{
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    borderRadius: 10,
-                                    marginBottom: 10,
-                                }}
-                                key={item.id}
-                            >
-                                <Text style={{ color: "gray" }}>
-                                    {item.date}
-                                </Text>
-                                <Text>{item.content}</Text>
-                            </View>
-                        ))
-                    ) : (
-                        <View
-                            style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Text>Sign in to receive notifications</Text>
-                        </View>
-                    )}
+                    {notification.length > 0
+                        ? notification.map((item) => (
+                              <View
+                                  style={{
+                                      borderWidth: 1,
+                                      padding: 10,
+                                      borderRadius: 10,
+                                      marginBottom: 10,
+                                  }}
+                                  key={item.id}
+                              >
+                                  <Text style={{ color: "gray" }}>
+                                      {item.date}
+                                  </Text>
+                                  <Text>{item.content}</Text>
+                              </View>
+                          ))
+                        : null}
                 </View>
             </SafeAreaView>
         </ScrollView>

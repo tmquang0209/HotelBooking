@@ -121,8 +121,8 @@ export default function ListRooms({ route }) {
 
     const [selectedId, setSelectedId] = useState();
 
-    const [min, setMin] = useState(0);
-    const [max, setMax] = useState(0);
+    const [min, setMin] = useState();
+    const [max, setMax] = useState();
 
     const [filterRooms, setFilterRooms] = useState(listRooms);
 
@@ -135,8 +135,11 @@ export default function ListRooms({ route }) {
                 route.params.numOfRoom,
                 route.params.numOfPeople
             );
-            setListRooms(roomData.result);
-            setFilterRooms(roomData.result)
+            const data = roomData.result.filter(
+                (item) => item.available_rooms > 0
+            );
+            setListRooms(data);
+            setFilterRooms(data);
             setSearchID(roomData.location_id);
         } catch (error) {
             console.error(error);
@@ -168,6 +171,11 @@ export default function ListRooms({ route }) {
                 (item) =>
                     item.min_total_price >= min && item.min_total_price <= max
             );
+        } else {
+            console.log("max = 0");
+            filteredRooms = filteredRooms.filter(
+                (item) => item.min_total_price > min
+            );
         }
 
         if (selectedId) {
@@ -184,6 +192,13 @@ export default function ListRooms({ route }) {
 
         setFilterRooms(filteredRooms); // Update the state with the filtered and sorted rooms
         console.log(filteredRooms);
+    };
+
+    const handleReset = () => {
+        setFilterRooms(listRooms);
+        setSelectedId();
+        setMin();
+        setMax();
     };
 
     const navigationView = () => {
@@ -207,7 +222,8 @@ export default function ListRooms({ route }) {
                         }}
                         keyboardType="numeric"
                         onChangeText={(num) => setMin(num)}
-                    />
+                        value={min}
+                        />
                     <Text style={{ justifyContent: "center", padding: 10 }}>
                         {" "}
                         -{" "}
@@ -222,7 +238,8 @@ export default function ListRooms({ route }) {
                         }}
                         keyboardType="numeric"
                         onChangeText={(num) => setMax(num)}
-                    />
+                        value={max}
+                        />
                 </View>
                 <TouchableOpacity style={styles.bookingButton}>
                     <Text
@@ -234,6 +251,7 @@ export default function ListRooms({ route }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.bookingButton, { backgroundColor: "red" }]}
+                    onPress={() => handleReset()}
                 >
                     <Text style={styles.bookingButtonText}>Reset</Text>
                 </TouchableOpacity>

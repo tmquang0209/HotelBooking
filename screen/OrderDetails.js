@@ -12,7 +12,7 @@ export default function OrderDetails({ route }) {
     const { params } = route;
     // const { booking } = params;
 
-    const [account, setAccount] = useState();
+    const [account, setAccount] = useState({ email: "" });
     const [booking, setBooking] = useState(params.booking);
     const [reviewed, setReviewed] = useState(false);
 
@@ -242,21 +242,22 @@ export default function OrderDetails({ route }) {
                                 </Text>
                             </TouchableOpacity>
                         )}
-                    {booking.status === "booked" && (
-                        <View>
-                            <TouchableOpacity
-                                style={[
-                                    styles.bookingButton,
-                                    { backgroundColor: "red" },
-                                ]}
-                                onPress={() => onCancelPress()}
-                            >
-                                <Text style={styles.bookingButtonText}>
-                                    Cancel
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
+                    {booking.status === "booked" &&
+                        account.email === booking.email && (
+                            <View>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.bookingButton,
+                                        { backgroundColor: "red" },
+                                    ]}
+                                    onPress={() => onCancelPress()}
+                                >
+                                    <Text style={styles.bookingButtonText}>
+                                        Cancel
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
 
                     {booking.status === "check_out" &&
                         account?.email === booking.email &&

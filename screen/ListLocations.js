@@ -13,6 +13,7 @@ import { SearchBar } from "react-native-elements";
 import styles from "../styles";
 import axios from "axios";
 import { ActivityIndicator } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 
 const ItemView = (props) => {
     const { item, handlePressItem } = props;
@@ -36,6 +37,7 @@ const ItemView = (props) => {
 };
 
 export default function ListLocations({ navigation }) {
+    const isFocused = useIsFocused();
     const [show, setShow] = useState(false);
     const [search, setSearch] = useState("");
     const [location, setLocation] = useState([]);
@@ -97,7 +99,7 @@ export default function ListLocations({ navigation }) {
             ),
         });
         fetchLocations();
-    }, []);
+    }, [isFocused]);
 
     return (
         <SafeAreaView style={styles.container}>
